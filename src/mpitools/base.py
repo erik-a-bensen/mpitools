@@ -1,4 +1,5 @@
 from mpi4py import MPI
+import sys
 from collections.abc import Callable
 from functools import wraps
 import traceback
@@ -34,4 +35,5 @@ def abort_on_error(func: Callable, exception_type: Exception = Exception) -> Cal
             print(f"Error in process {rank}")
             print(traceback.format_exc())
             comm.Abort(1)
+            sys.exit(1)
     return wrapper

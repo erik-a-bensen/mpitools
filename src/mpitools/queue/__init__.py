@@ -1,1 +1,2 @@
-from .tasks import Task, EndTask
+from .tasks import Task, TaskResult 
+from .managers import MPIQueue
