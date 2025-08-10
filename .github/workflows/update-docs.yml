@@ -55,6 +55,17 @@ jobs:
                           annotation = annotation.replace('mpi4py.MPI.Comm', 'MPI.Comm')
                           annotation = annotation.replace('collections.abc.Callable', 'Callable')
                           annotation = annotation.replace('typing.', '')
+                          
+                          # Remove <class '...'> wrappers
+                          if annotation.startswith('<class \'') and annotation.endswith('\'>'):
+                              annotation = annotation[8:-2]  # Remove '<class \'' and '\'>'
+                          elif annotation.startswith('<') and annotation.endswith('>'):
+                              # Handle other object representations
+                              if 'class' in annotation:
+                                  parts = annotation.split('.')
+                                  if len(parts) > 1:
+                                      annotation = parts[-1].rstrip('\'>')
+                          
                           param_str += f': {annotation}'
                       
                       # Add default value if present
@@ -79,6 +90,11 @@ jobs:
                       ret_ann = str(sig.return_annotation)
                       ret_ann = ret_ann.replace('collections.abc.Callable', 'Callable')
                       ret_ann = ret_ann.replace('typing.', '')
+                      
+                      # Remove <class '...'> wrappers from return type
+                      if ret_ann.startswith('<class \'') and ret_ann.endswith('\'>'):
+                          ret_ann = ret_ann[8:-2]  # Remove '<class \'' and '\'>'
+                      
                       return_annotation = f' -> {ret_ann}'
                   
                   return f'({', '.join(params)}){return_annotation}'
