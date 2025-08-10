@@ -27,50 +27,39 @@ jobs:
           
       - name: Install dependencies
         run: |
-          pip install pydoc-markdown
           pip install -e .
           
-      - name: Debug - Test imports
-        run: |
-          python -c "
-          import sys
-          sys.path.insert(0, 'src')
-          import mpitools
-          print('=== Testing function imports ===')
-          for name in ['setup_mpi', 'abort_on_error']:
-              func = getattr(mpitools, name)
-              print(f'{name}:')
-              print(f'  Type: {type(func)}')
-              print(f'  Has docstring: {bool(func.__doc__)}')
-              if func.__doc__:
-                  print(f'  Docstring length: {len(func.__doc__)}')
-          "
-
-      - name: Debug - What's in the mpitools module?
+      - name: Generate docs manually
         run: |
           python -c "
           import sys
           sys.path.insert(0, 'src')
           import mpitools
           import inspect
-          print('=== Module contents ===')
-          print('dir(mpitools):', [x for x in dir(mpitools) if not x.startswith('_')])
-          print()
-          print('=== Functions with docstrings ===')
+          
+          docs = []
           for name in dir(mpitools):
-              if not name.startswith('_'):
-                  obj = getattr(mpitools, name)
-                  if callable(obj) and hasattr(obj, '__doc__') and obj.__doc__:
-                      print(f'{name}: {type(obj).__name__} - docstring length: {len(obj.__doc__)}')
+              if not name.startswith('_') and hasattr(getattr(mpitools, name), '__doc__'):
+                  func = getattr(mpitools, name)
+                  if callable(func) and func.__doc__:
+                      try:
+                          sig = str(inspect.signature(func))
+                      except (ValueError, TypeError):
+                          sig = '(...)'
+                      docs.append(f'## \`{name}\`\n\n\`\`\`python\n{name}{sig}\n\`\`\`\n\n{func.__doc__}\n')
+          
+          with open('temp_docs.md', 'w') as f:
+              f.write('\n'.join(docs))
           "
           
-      - name: Update README with API docs
+      - name: Update README with custom docs
         run: |
           sed -i '/^## API Reference/,$d' README.md
           echo "" >> README.md
           echo "## API Reference" >> README.md
           echo "" >> README.md
-          pydoc-markdown >> README.md
+          cat temp_docs.md >> README.md
+          rm temp_docs.md
           
       - name: Commit changes
         run: |
