@@ -20,6 +20,11 @@ jobs:
         with:
           python-version: '3.x'
           
+      - name: Install MPI
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libopenmpi-dev openmpi-bin
+          
       - name: Install dependencies
         run: |
           pip install pydoc-markdown
@@ -39,14 +44,7 @@ jobs:
               print(f'  Has docstring: {bool(func.__doc__)}')
               if func.__doc__:
                   print(f'  Docstring length: {len(func.__doc__)}')
-                  print(f'  First 100 chars: {repr(func.__doc__[:100])}')
           "
-          
-      - name: Debug - Raw pydoc-markdown output
-        run: |
-          echo "=== Testing pydoc-markdown directly ==="
-          pydoc-markdown --verbose
-          echo "=== End of pydoc output ==="
           
       - name: Update README with API docs
         run: |
