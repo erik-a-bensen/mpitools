@@ -11,3 +11,7 @@ requires-python = ">=3.7"
 dependencies = [
     "mpi4py",
 ]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["mpitools*"]

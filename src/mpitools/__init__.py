@@ -32,5 +32,3 @@ __all__ = [
     'reduce_to_process',
     'reduce_to_all'
 ]
-
-
