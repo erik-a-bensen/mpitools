@@ -1,7 +1,7 @@
 loaders:
   - type: python
     search_path: [src]
-    modules: [mpitools]
+    modules: [mpitools, mpitools.queue]
 
 renderer:
   type: markdown

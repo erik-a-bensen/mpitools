@@ -46,10 +46,23 @@ jobs:
                   print(f'  Docstring length: {len(func.__doc__)}')
           "
 
-      - name: Debug - Verbose pydoc-markdown
+      - name: Debug - What's in the mpitools module?
         run: |
-          echo "=== Verbose pydoc-markdown output ==="
-          pydoc-markdown --verbose
+          python -c "
+          import sys
+          sys.path.insert(0, 'src')
+          import mpitools
+          import inspect
+          print('=== Module contents ===')
+          print('dir(mpitools):', [x for x in dir(mpitools) if not x.startswith('_')])
+          print()
+          print('=== Functions with docstrings ===')
+          for name in dir(mpitools):
+              if not name.startswith('_'):
+                  obj = getattr(mpitools, name)
+                  if callable(obj) and hasattr(obj, '__doc__') and obj.__doc__:
+                      print(f'{name}: {type(obj).__name__} - docstring length: {len(obj.__doc__)}')
+          "
           
       - name: Update README with API docs
         run: |
