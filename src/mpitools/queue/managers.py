@@ -1,6 +1,6 @@
 from .tasks import Task, TaskResult
-from ..base import comm, rank, size
 from mpi4py import MPI
+from mpi4py.MPI import Comm, COMM_WORLD
 import time
 from typing import List, Optional
 from enum import Enum
@@ -18,7 +18,7 @@ class SerialQueueManager:
     Used when MPI size is 1.
     """
     
-    def __init__(self):
+    def __init__(self, comm: Comm = COMM_WORLD):
         self.task_queue: List[Task] = []
         self.completed_results = {}  # task_id -> TaskResult
     
@@ -81,10 +81,10 @@ class MPIQueueManager:
     Runs on rank 0 (master process).
     """
     
-    def __init__(self):
+    def __init__(self, comm: Comm = COMM_WORLD):
         self.comm = comm
-        self.rank = rank
-        self.size = size
+        self.rank = comm.Get_rank()
+        self.size = comm.Get_size()
         
         if self.rank != 0:
             raise ValueError("QueueManager must run on rank 0")
@@ -173,9 +173,9 @@ class MPIQueueWorker:
     Runs on worker processes (rank > 0).
     """
     
-    def __init__(self):
+    def __init__(self, comm: Comm = COMM_WORLD):
         self.comm = comm
-        self.rank = rank
+        self.rank = comm.Get_rank()
         
         if self.rank == 0:
             raise ValueError("Worker cannot run on rank 0")
@@ -218,19 +218,19 @@ class MPIQueue:
     Automatically determines whether to run as manager or worker based on rank.
     """
     
-    def __init__(self):
+    def __init__(self, comm: Comm = COMM_WORLD):
         self.comm = comm
-        self.rank = rank
-        self.size = size
+        self.rank = comm.Get_rank()
+        self.size = comm.Get_size()
         self.manager = None
         self.worker = None
         
         if self.size == 1:
-            self.manager = SerialQueueManager()
+            self.manager = SerialQueueManager(comm)
         elif self.rank == 0:
-            self.manager = MPIQueueManager()
+            self.manager = MPIQueueManager(comm)
         else:
-            self.worker = MPIQueueWorker()
+            self.worker = MPIQueueWorker(comm)
     
     def add_task(self, task: Task):
         """Add a task to the queue (only valid on manager)"""

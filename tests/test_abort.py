@@ -3,7 +3,7 @@ import time
 
 comm, rank, size = setup_mpi()
 
-@abort_on_error
+@abort_on_error()
 def test_abort():
     """Test that the abort_on_error decorator works correctly"""
     for i in range(3):

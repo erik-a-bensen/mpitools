@@ -1,5 +1,8 @@
 from mpitools.queue import MPIQueue, Task
+from mpitools import setup_mpi
 import time
+
+comm, rank, size = setup_mpi()
 
 # Example usage and custom task implementations
 class ComputeTask(Task):
@@ -31,7 +34,7 @@ if __name__ == "__main__":
     # Example usage
     queue = MPIQueue()
     
-    if queue.rank == 0:
+    if rank == 0:
         # Create some example tasks
         tasks = [
             ComputeTask("square_1", "square", 5),
@@ -45,14 +48,11 @@ if __name__ == "__main__":
         queue.add_tasks(tasks)
         print(f"Added {len(tasks)} tasks to queue")
         
-        # Run the queue
-        results = queue.run(timeout=30)
-        
+    
+    results = queue.run(timeout=30)
+
+    if rank == 0:
         # Print results
         print("\nResults:")
         for task_id, result in results.items():
             print(f"  {task_id}: {result.result} (worker {result.worker_rank}, {result.execution_time:.3f}s)")
-    
-    else:
-        # Worker processes just run
-        queue.run()
