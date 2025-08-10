@@ -112,6 +112,63 @@ jobs:
               except (ValueError, TypeError):
                   return '(...)'
           
+          def clean_constructor_signature(func, class_name):
+              try:
+                  sig = inspect.signature(func)
+                  params = []
+                  
+                  for param_name, param in sig.parameters.items():
+                      # Skip 'self' parameter for constructors
+                      if param_name == 'self':
+                          continue
+                          
+                      # Clean up the parameter representation
+                      param_str = param_name
+                      
+                      # Add type annotation if present
+                      if param.annotation != inspect.Parameter.empty:
+                          annotation = str(param.annotation)
+                          # Clean up common type annotations
+                          annotation = annotation.replace('mpi4py.MPI.', 'MPI.')  # Handle all MPI types
+                          annotation = annotation.replace('collections.abc.Callable', 'Callable')
+                          annotation = annotation.replace('typing.', '')
+                          
+                          # Clean up internal module paths to public import paths (generic)
+                          annotation = re.sub(r'mpitools\.([^.]+)\.([^.]+)\.([^.]+)', r'mpitools.\1.\3', annotation)
+                          
+                          # Remove <class '...'> wrappers
+                          if annotation.startswith('<class \'') and annotation.endswith('\'>'):
+                              annotation = annotation[8:-2]  # Remove '<class \'' and '\'>'
+                          elif annotation.startswith('<') and annotation.endswith('>'):
+                              # Handle other object representations
+                              if 'class' in annotation:
+                                  parts = annotation.split('.')
+                                  if len(parts) > 1:
+                                      annotation = parts[-1].rstrip('\'>')
+                          
+                          param_str += f': {annotation}'
+                      
+                      # Add default value if present
+                      if param.default != inspect.Parameter.empty:
+                          default = str(param.default)
+                          # Clean up common default values
+                          if 'COMM_WORLD' in default or 'Intracomm' in default:
+                              default = 'MPI.COMM_WORLD'
+                          elif 'Exception' in default:
+                              default = 'Exception'
+                          elif default == 'sum':
+                              default = '\'sum\''
+                          elif default.startswith('<') and default.endswith('>'):
+                              if 'COMM_WORLD' in str(param.default.__class__.__name__) or 'Comm' in str(type(param.default).__name__):
+                                  default = 'MPI.COMM_WORLD'
+                          param_str += f' = {default}'
+                      
+                      params.append(param_str)
+                  
+                  return f'{class_name}({', '.join(params)})'
+              except (ValueError, TypeError):
+                  return f'{class_name}(...)'
+          
           def document_class(cls, class_name):
               docs = []
               # Document the class itself
@@ -120,21 +177,22 @@ jobs:
               else:
                   docs.append(f'## \`{class_name}\` (class)\n\n*No description available.*\n')
               
-              # Document __init__ method first if it exists and has a docstring
-              if hasattr(cls, '__init__') and cls.__init__.__doc__:
+              # Always document __init__ method if it exists (show as ClassName(args))
+              if hasattr(cls, '__init__'):
                   try:
-                      init_sig = clean_signature(cls.__init__)
-                      docs.append(f'### \`__init__\`\n\n\`\`\`python\n__init__{init_sig}\n\`\`\`\n\n{cls.__init__.__doc__}\n')
-                  except (AttributeError, TypeError):
-                      pass
+                      constructor_sig = clean_constructor_signature(cls.__init__, class_name)
+                      if cls.__init__.__doc__:
+                          docs.append(f'### Constructor\n\n\`\`\`python\n{constructor_sig}\n\`\`\`\n\n{cls.__init__.__doc__}\n')
+                      else:
+                          docs.append(f'### Constructor\n\n\`\`\`python\n{constructor_sig}\n\`\`\`\n\n*No description available.*\n')
+                      print(f'  Documented constructor for {class_name}')
+                  except (AttributeError, TypeError) as e:
+                      print(f'  Failed to document constructor for {class_name}: {e}')
               
               # Document other public methods
               methods = []
               for method_name in dir(cls):
-                  if not method_name.startswith('_') or method_name == '__init__':
-                      # Skip __init__ since we handled it above
-                      if method_name == '__init__':
-                          continue
+                  if not method_name.startswith('_'):
                       try:
                           method = getattr(cls, method_name)
                           if callable(method) and hasattr(method, '__doc__') and method.__doc__:
@@ -144,8 +202,7 @@ jobs:
                           continue
               
               if methods:
-                  if not (hasattr(cls, '__init__') and cls.__init__.__doc__):
-                      docs.append('### Methods\n')
+                  docs.append('### Methods\n')
                   docs.extend(methods)
               
               return docs
@@ -165,15 +222,15 @@ jobs:
               for name in names_to_document:
                   if hasattr(module, name):
                       obj = getattr(module, name)
-                      if hasattr(obj, '__doc__') and obj.__doc__:
-                          if inspect.isclass(obj):
-                              # Document classes with their methods
-                              class_docs = document_class(obj, name)
-                              docs.extend(class_docs)
-                          elif callable(obj):
-                              # Document functions
-                              sig = clean_signature(obj)
-                              docs.append(f'## \`{name}\`\n\n\`\`\`python\n{name}{sig}\n\`\`\`\n\n{obj.__doc__}\n')
+                      if inspect.isclass(obj):
+                          # Document classes with their methods (even if class has no docstring)
+                          print(f'  Found class: {name}')
+                          class_docs = document_class(obj, name)
+                          docs.extend(class_docs)
+                      elif callable(obj) and hasattr(obj, '__doc__') and obj.__doc__:
+                          # Document functions only if they have docstrings
+                          sig = clean_signature(obj)
+                          docs.append(f'## \`{name}\`\n\n\`\`\`python\n{name}{sig}\n\`\`\`\n\n{obj.__doc__}\n')
               return docs
           
           all_docs = []
