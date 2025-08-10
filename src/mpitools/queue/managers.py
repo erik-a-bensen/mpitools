@@ -214,9 +214,9 @@ class _MPIQueueWorker:
 
 class MPIQueue:
     """
-    Interface for the MPI queue system.
-    Automatically determines whether to run as manager or worker based on rank.
-    If running on a single process (size 1), uses serial execution.
+    Interface for the MPI queue system.\\
+    Automatically determines whether to run as manager or worker based on rank.\\
+    If running on a single process (size 1), uses serial execution.\\
     """
     
     def __init__(self, comm: Comm = COMM_WORLD):
@@ -245,7 +245,7 @@ class MPIQueue:
             raise RuntimeError("Tasks can only be added on the manager process (rank 0)")
         self.manager.add_tasks(tasks)
     
-    def run(self, timeout: Optional[float] = None) -> Optional[dict]:
+    def run(self, timeout: Optional[float] = None) -> dict[str, TaskResult]:
         """
         Run the queue system.
         
@@ -253,7 +253,7 @@ class MPIQueue:
         For workers (rank > 0): executes tasks until shutdown
         
         Returns:
-            Dictionary of results (only on manager), None on workers
+            Dictionary of results indexed by task_id (only on manager), None on workers
         """
         if self.rank == 0:
             return self.manager.run(timeout)
