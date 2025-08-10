@@ -1,0 +1,42 @@
+name: Update Documentation
+on:
+  push:
+    branches: [main]
+    paths: ['**/*.py']
+
+jobs:
+  update-docs:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
+          
+      - name: Install dependencies
+        run: |
+          pip install pydoc-markdown
+          pip install -e .
+          
+      - name: Update README with API docs
+        run: |
+          # Keep everything before "## API Reference" 
+          sed -i '/^## API Reference/,$d' README.md
+          
+          # Add API section
+          echo "" >> README.md
+          echo "## API Reference" >> README.md
+          echo "" >> README.md
+          pydoc-markdown >> README.md
+          
+      - name: Commit changes
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add README.md
+          git diff --staged --quiet || git commit -m "Auto-update README with API docs [skip ci]"
+          git push
