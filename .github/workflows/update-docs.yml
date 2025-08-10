@@ -46,18 +46,10 @@ jobs:
                   print(f'  Docstring length: {len(func.__doc__)}')
           "
 
-      - name: Debug - What does pydoc-markdown see?
+      - name: Debug - Verbose pydoc-markdown
         run: |
-          cat > debug-config.yml << 'EOF'
-          loaders:
-            - type: python
-              search_path: [src]
-              modules: [mpitools]
-          renderer:
-            type: markdown
-          EOF
-          echo "=== Testing with no filters ==="
-          pydoc-markdown -c debug-config.yml --verbose
+          echo "=== Verbose pydoc-markdown output ==="
+          pydoc-markdown --verbose
           
       - name: Update README with API docs
         run: |
