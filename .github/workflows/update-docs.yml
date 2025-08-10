@@ -40,6 +40,12 @@ jobs:
           import importlib
           import re
           
+          def clean_docstring(docstring):
+              if not docstring:
+                  return None
+              # Use inspect.cleandoc to properly handle indentation and whitespace
+              return inspect.cleandoc(docstring)
+          
           def clean_signature(func):
               try:
                   sig = inspect.signature(func)
@@ -173,35 +179,36 @@ jobs:
               docs = []
               
               # Document the class header
-              docs.append(f'## \`{class_name}\` (class)\n')
+              docs.append(f'## \`{class_name}\` (class)')
               
               # Add constructor signature if __init__ exists
               if hasattr(cls, '__init__'):
                   try:
                       constructor_sig = clean_constructor_signature(cls.__init__, class_name)
-                      docs.append(f'\`\`\`python\n{constructor_sig}\n\`\`\`\n')
+                      docs.append(f'\`\`\`python\n{constructor_sig}\n\`\`\`')
                   except (AttributeError, TypeError):
-                      docs.append(f'\`\`\`python\n{class_name}(...)\n\`\`\`\n')
+                      docs.append(f'\`\`\`python\n{class_name}(...)\n\`\`\`')
               
               # Handle docstrings - show both class and __init__ docstrings if they exist
-              class_docstring = cls.__doc__ if cls.__doc__ else None
+              class_docstring = clean_docstring(cls.__doc__)
               init_docstring = None
-              if hasattr(cls, '__init__') and cls.__init__.__doc__:
-                  init_docstring = cls.__init__.__doc__
+              if hasattr(cls, '__init__'):
+                  init_docstring = clean_docstring(cls.__init__.__doc__)
               
               if class_docstring and init_docstring:
                   # Both exist - show class docstring, then init docstring
-                  docs.append(f'{class_docstring}\n')
-                  docs.append(f'**Constructor:**\n\n{init_docstring}\n')
+                  docs.append(class_docstring)
+                  docs.append('**Constructor:**')
+                  docs.append(init_docstring)
               elif class_docstring:
                   # Only class docstring
-                  docs.append(f'{class_docstring}\n')
+                  docs.append(class_docstring)
               elif init_docstring:
                   # Only init docstring
-                  docs.append(f'{init_docstring}\n')
+                  docs.append(init_docstring)
               else:
                   # No docstrings
-                  docs.append('*No description available.*\n')
+                  docs.append('*No description available.*')
               
               # Document public methods
               methods = []
@@ -209,14 +216,18 @@ jobs:
                   if not method_name.startswith('_'):
                       try:
                           method = getattr(cls, method_name)
-                          if callable(method) and hasattr(method, '__doc__') and method.__doc__:
+                          if callable(method) and method.__doc__:
                               sig = clean_signature(method)
-                              methods.append(f'### \`{method_name}\`\n\n\`\`\`python\n{method_name}{sig}\n\`\`\`\n\n{method.__doc__}\n')
+                              cleaned_method_doc = clean_docstring(method.__doc__)
+                              if cleaned_method_doc:
+                                  methods.append(f'### \`{method_name}\`')
+                                  methods.append(f'\`\`\`python\n{method_name}{sig}\n\`\`\`')
+                                  methods.append(cleaned_method_doc)
                       except (AttributeError, TypeError):
                           continue
               
               if methods:
-                  docs.append('### Methods\n')
+                  docs.append('### Methods')
                   docs.extend(methods)
               
               return docs
@@ -241,16 +252,22 @@ jobs:
                           print(f'  Found class: {name}')
                           class_docs = document_class(obj, name)
                           docs.extend(class_docs)
-                      elif callable(obj) and hasattr(obj, '__doc__') and obj.__doc__:
+                      elif callable(obj) and obj.__doc__:
                           # Document functions only if they have docstrings
                           sig = clean_signature(obj)
-                          docs.append(f'## \`{name}\`\n\n\`\`\`python\n{name}{sig}\n\`\`\`\n\n{obj.__doc__}\n')
+                          cleaned_func_doc = clean_docstring(obj.__doc__)
+                          if cleaned_func_doc:
+                              docs.append(f'## \`{name}\`')
+                              docs.append(f'\`\`\`python\n{name}{sig}\n\`\`\`')
+                              docs.append(cleaned_func_doc)
               return docs
           
           all_docs = []
           
           # Add header to the API docs
-          all_docs.append('# API Reference\n')
+          all_docs.append('# API Reference')
+          all_docs.append('> **⚠️ Development Version**: This API is subject to change until v1.0.0. Breaking changes may occur in minor releases.')
+          all_docs.append('')
           
           # Document main module
           main_docs = document_module(mpitools, 'mpitools')
@@ -263,7 +280,11 @@ jobs:
                   if not modname.startswith('_') and ispkg:  # Only include packages (with __init__.py)
                       try:
                           submodule = importlib.import_module(f'mpitools.{modname}')
-                          all_docs.append(f'\n---\n\n# {modname.title()} Submodule\n\n')
+                          all_docs.append('')
+                          all_docs.append('---')
+                          all_docs.append('')
+                          all_docs.append(f'# {modname.title()} Submodule')
+                          all_docs.append('')
                           sub_docs = document_module(submodule, f'mpitools.{modname}')
                           all_docs.extend(sub_docs)
                       except ImportError as e:

@@ -214,8 +214,8 @@ class _MPIQueueWorker:
 
 class MPIQueue:
     """
-    Interface for the MPI queue system.\\
-    Automatically determines whether to run as manager or worker based on rank.\\
+    Interface for the MPI queue system.
+    Automatically determines whether to run as manager or worker based on rank.
     If running on a single process (size 1), uses serial execution.
     """
     
@@ -249,7 +249,7 @@ class MPIQueue:
         """
         Run the queue system.
         
-        For manager (rank 0): distributes tasks and returns results\\
+        For manager (rank 0): distributes tasks and returns results
         For workers (rank > 0): executes tasks until shutdown
         
         Returns:
