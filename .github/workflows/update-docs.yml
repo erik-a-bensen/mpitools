@@ -39,19 +39,70 @@ jobs:
           import pkgutil
           import importlib
           
+          def clean_signature(func):
+              try:
+                  sig = inspect.signature(func)
+                  params = []
+                  
+                  for param_name, param in sig.parameters.items():
+                      # Clean up the parameter representation
+                      param_str = param_name
+                      
+                      # Add type annotation if present
+                      if param.annotation != inspect.Parameter.empty:
+                          annotation = str(param.annotation)
+                          # Clean up common type annotations
+                          annotation = annotation.replace('mpi4py.MPI.Comm', 'MPI.Comm')
+                          annotation = annotation.replace('collections.abc.Callable', 'Callable')
+                          annotation = annotation.replace('typing.', '')
+                          param_str += f': {annotation}'
+                      
+                      # Add default value if present
+                      if param.default != inspect.Parameter.empty:
+                          default = str(param.default)
+                          # Clean up common default values
+                          if 'COMM_WORLD' in default or 'Intracomm' in default:
+                              default = 'MPI.COMM_WORLD'
+                          elif 'Exception' in default:
+                              default = 'Exception'
+                          elif default.startswith('<') and default.endswith('>'):
+                              # Generic cleanup for object representations
+                              if 'COMM_WORLD' in str(param.default.__class__.__name__) or 'Comm' in str(type(param.default).__name__):
+                                  default = 'MPI.COMM_WORLD'
+                          param_str += f' = {default}'
+                      
+                      params.append(param_str)
+                  
+                  # Handle return annotation
+                  return_annotation = ''
+                  if sig.return_annotation != inspect.Signature.empty:
+                      ret_ann = str(sig.return_annotation)
+                      ret_ann = ret_ann.replace('collections.abc.Callable', 'Callable')
+                      ret_ann = ret_ann.replace('typing.', '')
+                      return_annotation = f' -> {ret_ann}'
+                  
+                  return f'({', '.join(params)}){return_annotation}'
+              except (ValueError, TypeError):
+                  return '(...)'
+          
           def document_module(module, module_name):
               docs = []
               print(f'=== Documenting {module_name} ===')
               
-              for name in dir(module):
-                  if not name.startswith('_'):
+              # Use __all__ order if available, otherwise fall back to dir()
+              if hasattr(module, '__all__'):
+                  names_to_document = module.__all__
+                  print(f'Using __all__ order: {names_to_document}')
+              else:
+                  names_to_document = [name for name in dir(module) if not name.startswith('_')]
+                  print(f'Using alphabetical order: {names_to_document}')
+              
+              for name in names_to_document:
+                  if hasattr(module, name):
                       obj = getattr(module, name)
                       if hasattr(obj, '__doc__') and obj.__doc__:
                           if callable(obj):
-                              try:
-                                  sig = str(inspect.signature(obj))
-                              except (ValueError, TypeError):
-                                  sig = '(...)'
+                              sig = clean_signature(obj)
                               docs.append(f'## \`{name}\`\n\n\`\`\`python\n{name}{sig}\n\`\`\`\n\n{obj.__doc__}\n')
                           elif inspect.isclass(obj):
                               # Document classes
