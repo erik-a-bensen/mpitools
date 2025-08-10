@@ -5,11 +5,7 @@ loaders:
 
 processors:
   - type: filter
-    expression: |
-      (
-        not name.startswith('_') and
-        (not module.__all__ or name in module.__all__)
-      )
+    expression: not name.startswith('_')
   - type: smart
   - type: crossref
 
