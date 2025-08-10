@@ -3,10 +3,6 @@ loaders:
     search_path: [src]
     modules: [mpitools]
 
-processors:
-  - type: filter
-    expression: not name.startswith('_')
-
 renderer:
   type: markdown
   filename: null
