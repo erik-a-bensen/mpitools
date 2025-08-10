@@ -151,7 +151,7 @@ def gather_to_all(comm: Comm = COMM_WORLD) -> Callable:
     return decorator
 
 # Reduce decorators
-reduce_ops = {
+_reduce_ops = {
     'sum': MPI.SUM,
     'prod': MPI.PROD,
     'max': MPI.MAX,
@@ -190,9 +190,9 @@ def reduce_to_main(op: str | Op = 'sum', comm: Comm = COMM_WORLD) -> Callable:
     Rank 0 receives the reduced result, other ranks receive None.
     """
     if isinstance(op, str):
-        if op not in reduce_ops:
-            raise ValueError(f"Invalid reduction operation: {op}. Supported operations: {list(reduce_ops.keys())}")
-        op = reduce_ops[op.lower()]
+        if op not in _reduce_ops:
+            raise ValueError(f"Invalid reduction operation: {op}. Supported operations: {list(_reduce_ops.keys())}")
+        op = _reduce_ops[op.lower()]
 
     def decorator(func: Callable) -> Callable:
         @wraps(func)
@@ -228,9 +228,9 @@ def reduce_to_process(process_rank: int, op: str | Op = 'sum', comm: Comm = COMM
     The specified rank receives the reduced result, other ranks receive None.
     """
     if isinstance(op, str):
-        if op not in reduce_ops:
-            raise ValueError(f"Invalid reduction operation: {op}. Supported operations: {list(reduce_ops.keys())}")
-        op = reduce_ops[op.lower()]
+        if op not in _reduce_ops:
+            raise ValueError(f"Invalid reduction operation: {op}. Supported operations: {list(_reduce_ops.keys())}")
+        op = _reduce_ops[op.lower()]
 
     def decorator(func: Callable) -> Callable:
         @wraps(func)
@@ -264,9 +264,9 @@ def reduce_to_all(op: str | Op = 'sum', comm: Comm = COMM_WORLD) -> Callable:
     All processes receive the same reduced result.
     """
     if isinstance(op, str):
-        if op not in reduce_ops:
-            raise ValueError(f"Invalid reduction operation: {op}. Supported operations: {list(reduce_ops.keys())}")
-        op = reduce_ops[op.lower()]
+        if op not in _reduce_ops:
+            raise ValueError(f"Invalid reduction operation: {op}. Supported operations: {list(_reduce_ops.keys())}")
+        op = _reduce_ops[op.lower()]
 
     def decorator(func: Callable) -> Callable:
         @wraps(func)

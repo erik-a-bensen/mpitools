@@ -5,14 +5,14 @@ import time
 from typing import List, Optional
 from enum import Enum
 
-class MessageTag(Enum):
+class _MessageTag(Enum):
     """Message tags for MPI communication"""
     TASK_ASSIGNMENT = 1
     TASK_RESULT = 2
     SHUTDOWN = 3
 
 
-class SerialQueueManager:
+class _SerialQueueManager:
     """
     Serial manager class that executes tasks sequentially on a single process.
     Used when MPI size is 1.
@@ -75,7 +75,7 @@ class SerialQueueManager:
         )
 
 
-class MPIQueueManager:
+class _MPIQueueManager:
     """
     Manager class that distributes tasks to worker processes.
     Runs on rank 0 (master process).
@@ -124,7 +124,7 @@ class MPIQueueManager:
             
             # Wait for any worker to return a result
             status = MPI.Status()
-            result = self.comm.recv(source=MPI.ANY_SOURCE, tag=MessageTag.TASK_RESULT.value, status=status)
+            result = self.comm.recv(source=MPI.ANY_SOURCE, tag=_MessageTag.TASK_RESULT.value, status=status)
             worker_rank = status.Get_source()
             
             # Store the result
@@ -138,7 +138,7 @@ class MPIQueueManager:
                 task.worker_rank = worker_rank
                 task_id = task.task_id
                 
-                self.comm.send(task, dest=worker_rank, tag=MessageTag.TASK_ASSIGNMENT.value)
+                self.comm.send(task, dest=worker_rank, tag=_MessageTag.TASK_ASSIGNMENT.value)
                 self.pending_tasks[worker_rank] = task_id
                 
                 # Release task memory after sending
@@ -158,16 +158,16 @@ class MPIQueueManager:
                 task.worker_rank = worker_rank
                 
                 # Send task to worker
-                self.comm.send(task, dest=worker_rank, tag=MessageTag.TASK_ASSIGNMENT.value)
+                self.comm.send(task, dest=worker_rank, tag=_MessageTag.TASK_ASSIGNMENT.value)
                 self.pending_tasks[worker_rank] = task.task_id
     
     def _shutdown_workers(self):
         """Send shutdown signals to all workers"""
         for worker_rank in self.worker_ranks:
-            self.comm.send(None, dest=worker_rank, tag=MessageTag.SHUTDOWN.value)
+            self.comm.send(None, dest=worker_rank, tag=_MessageTag.SHUTDOWN.value)
 
 
-class MPIQueueWorker:
+class _MPIQueueWorker:
     """
     Worker class that executes tasks.
     Runs on worker processes (rank > 0).
@@ -187,14 +187,14 @@ class MPIQueueWorker:
             status = MPI.Status()
             message = self.comm.recv(source=0, tag=MPI.ANY_TAG, status=status)
             
-            if status.Get_tag() == MessageTag.SHUTDOWN.value:
+            if status.Get_tag() == _MessageTag.SHUTDOWN.value:
                 break
-            elif status.Get_tag() == MessageTag.TASK_ASSIGNMENT.value:
+            elif status.Get_tag() == _MessageTag.TASK_ASSIGNMENT.value:
                 task = message
                 result = self._execute_task(task)
                 
                 # Send result back to manager
-                self.comm.send(result, dest=0, tag=MessageTag.TASK_RESULT.value)
+                self.comm.send(result, dest=0, tag=_MessageTag.TASK_RESULT.value)
     
     def _execute_task(self, task: Task) -> TaskResult:
         """Execute a single task and return the result"""
@@ -214,7 +214,7 @@ class MPIQueueWorker:
 
 class MPIQueue:
     """
-    Main interface for the MPI queue system.
+    Interface for the MPI queue system.
     Automatically determines whether to run as manager or worker based on rank.
     """
     
@@ -226,11 +226,11 @@ class MPIQueue:
         self.worker = None
         
         if self.size == 1:
-            self.manager = SerialQueueManager(comm)
+            self.manager = _SerialQueueManager(comm)
         elif self.rank == 0:
-            self.manager = MPIQueueManager(comm)
+            self.manager = _MPIQueueManager(comm)
         else:
-            self.worker = MPIQueueWorker(comm)
+            self.worker = _MPIQueueWorker(comm)
     
     def add_task(self, task: Task):
         """Add a task to the queue (only valid on manager)"""

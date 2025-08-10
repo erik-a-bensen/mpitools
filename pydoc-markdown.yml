@@ -1,0 +1,19 @@
+loaders:
+  - type: python
+    search_path: [src]  
+    modules: [mpitools]  
+
+processors:
+  - type: filter
+    expression: |
+      (
+        documented and 
+        not name.startswith('_') and
+        (not module.__all__ or name in module.__all__)
+      )
+  - type: smart
+  - type: crossref
+
+renderer:
+  type: markdown
+  filename: null
