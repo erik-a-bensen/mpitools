@@ -171,25 +171,39 @@ jobs:
           
           def document_class(cls, class_name):
               docs = []
-              # Document the class itself
-              if cls.__doc__:
-                  docs.append(f'## \`{class_name}\` (class)\n\n{cls.__doc__}\n')
-              else:
-                  docs.append(f'## \`{class_name}\` (class)\n\n*No description available.*\n')
               
-              # Always document __init__ method if it exists (show as ClassName(args))
+              # Document the class header
+              docs.append(f'## \`{class_name}\` (class)\n')
+              
+              # Add constructor signature if __init__ exists
               if hasattr(cls, '__init__'):
                   try:
                       constructor_sig = clean_constructor_signature(cls.__init__, class_name)
-                      if cls.__init__.__doc__:
-                          docs.append(f'### Constructor\n\n\`\`\`python\n{constructor_sig}\n\`\`\`\n\n{cls.__init__.__doc__}\n')
-                      else:
-                          docs.append(f'### Constructor\n\n\`\`\`python\n{constructor_sig}\n\`\`\`\n\n*No description available.*\n')
-                      print(f'  Documented constructor for {class_name}')
-                  except (AttributeError, TypeError) as e:
-                      print(f'  Failed to document constructor for {class_name}: {e}')
+                      docs.append(f'\`\`\`python\n{constructor_sig}\n\`\`\`\n')
+                  except (AttributeError, TypeError):
+                      docs.append(f'\`\`\`python\n{class_name}(...)\n\`\`\`\n')
               
-              # Document other public methods
+              # Handle docstrings - show both class and __init__ docstrings if they exist
+              class_docstring = cls.__doc__ if cls.__doc__ else None
+              init_docstring = None
+              if hasattr(cls, '__init__') and cls.__init__.__doc__:
+                  init_docstring = cls.__init__.__doc__
+              
+              if class_docstring and init_docstring:
+                  # Both exist - show class docstring, then init docstring
+                  docs.append(f'{class_docstring}\n')
+                  docs.append(f'**Constructor:**\n\n{init_docstring}\n')
+              elif class_docstring:
+                  # Only class docstring
+                  docs.append(f'{class_docstring}\n')
+              elif init_docstring:
+                  # Only init docstring
+                  docs.append(f'{init_docstring}\n')
+              else:
+                  # No docstrings
+                  docs.append('*No description available.*\n')
+              
+              # Document public methods
               methods = []
               for method_name in dir(cls):
                   if not method_name.startswith('_'):
