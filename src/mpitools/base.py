@@ -17,6 +17,25 @@ def setup_mpi() -> tuple[Comm, int, int]:
     return comm, rank, size
 
 def abort_on_error(exception_type: Exception = Exception, comm: Comm = COMM_WORLD) -> Callable:
+    """
+    Decorator that aborts all MPI processes when an exception occurs.
+    
+    Parameters
+    ----------
+    exception_type : Exception, optional
+        Type of exception to catch. Defaults to Exception (all exceptions).
+    comm : MPI.Comm, optional
+        MPI communicator to abort. Defaults to COMM_WORLD.
+    
+    Returns
+    -------
+    Callable
+        Decorator function.
+    
+    Notes
+    -----
+    Prints error traceback and calls comm.Abort(1) to terminate all processes.
+    """
     rank = comm.Get_rank()
     def decorator(func: Callable) -> Callable:
         @wraps(func)
