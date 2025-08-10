@@ -4,6 +4,9 @@ on:
     branches: [main]
     paths: ['**/*.py']
 
+permissions:
+  contents: write  # This gives permission to push changes
+
 jobs:
   update-docs:
     runs-on: ubuntu-latest
