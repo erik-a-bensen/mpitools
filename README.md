@@ -16,6 +16,7 @@ Description, installation, examples...
 
 
 
+
 # API Reference
 
 ## `setup_mpi`
@@ -417,7 +418,7 @@ Automatically determines whether to run as manager or worker based on rank.
 ### `add_task`
 
 ```python
-add_task(self, task: mpitools.queue.tasks.Task)
+add_task(self, task: mpitools.queue.Task)
 ```
 
 Add a task to the queue (only valid on manager)
@@ -425,7 +426,7 @@ Add a task to the queue (only valid on manager)
 ### `add_tasks`
 
 ```python
-add_tasks(self, tasks: List[mpitools.queue.tasks.Task])
+add_tasks(self, tasks: List[mpitools.queue.Task])
 ```
 
 Add multiple tasks to the queue (only valid on manager)
