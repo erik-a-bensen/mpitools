@@ -366,12 +366,19 @@ All processes receive the same reduced result.
 ## `Task` (class)
 
 ```python
-Task(task_id: str, kwargs)
+Task(task_id: str)
 ```
 
 
-Abstract base class for tasks.
+Abstract base class for MPIQueue tasks.
 Users should inherit from this class and implement the execute method.
+
+attributes:
+    task_id: Unique identifier for the task.
+    created_at: Timestamp when the task was created.
+    started_at: Timestamp when the task started execution.
+    completed_at: Timestamp when the task was completed.
+    worker_rank: Rank of the worker that executed the task.
 
 
 ### Methods
@@ -393,7 +400,16 @@ This method must be implemented by subclasses.
 TaskResult(task_id: str, result: Any, execution_time: float = 0.0, worker_rank: int = -1)
 ```
 
-Container for task execution results
+
+Class to hold the result of a completed task.
+
+attributes:
+    task_id: Unique identifier for the task.
+    result: The result of the task execution.
+    execution_time: Time taken to execute the task in seconds.
+    worker_rank: Rank of the worker that executed the task.
+    completed_at: Timestamp when the task was completed.
+
 
 ## `MPIQueue` (class)
 
@@ -404,6 +420,7 @@ MPIQueue(comm: MPI.Comm = MPI.COMM_WORLD)
 
 Interface for the MPI queue system.
 Automatically determines whether to run as manager or worker based on rank.
+If running on a single process (size 1), uses serial execution.
 
 
 ### Methods
