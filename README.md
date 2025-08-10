@@ -150,4 +150,3 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 ## Acknowledgments
 
 - Built on [mpi4py](https://github.com/mpi4py/mpi4py)
-- Inspired by the need for simpler MPI programming patterns in Python

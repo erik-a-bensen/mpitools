@@ -120,10 +120,21 @@ jobs:
               else:
                   docs.append(f'## \`{class_name}\` (class)\n\n*No description available.*\n')
               
-              # Document public methods
+              # Document __init__ method first if it exists and has a docstring
+              if hasattr(cls, '__init__') and cls.__init__.__doc__:
+                  try:
+                      init_sig = clean_signature(cls.__init__)
+                      docs.append(f'### \`__init__\`\n\n\`\`\`python\n__init__{init_sig}\n\`\`\`\n\n{cls.__init__.__doc__}\n')
+                  except (AttributeError, TypeError):
+                      pass
+              
+              # Document other public methods
               methods = []
               for method_name in dir(cls):
-                  if not method_name.startswith('_'):
+                  if not method_name.startswith('_') or method_name == '__init__':
+                      # Skip __init__ since we handled it above
+                      if method_name == '__init__':
+                          continue
                       try:
                           method = getattr(cls, method_name)
                           if callable(method) and hasattr(method, '__doc__') and method.__doc__:
@@ -133,7 +144,8 @@ jobs:
                           continue
               
               if methods:
-                  docs.append('### Methods\n')
+                  if not (hasattr(cls, '__init__') and cls.__init__.__doc__):
+                      docs.append('### Methods\n')
                   docs.extend(methods)
               
               return docs
