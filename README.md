@@ -12,7 +12,7 @@ Description, installation, examples...
 
 
 
-## API Reference
+# API Reference
 
 ## `setup_mpi`
 
