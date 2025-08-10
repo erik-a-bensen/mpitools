@@ -14,12 +14,13 @@ Description, installation, examples...
 
 
 
+
 # API Reference
 
 ## `setup_mpi`
 
 ```python
-setup_mpi() -> tuple[mpi4py.MPI.Comm, int, int]
+setup_mpi() -> tuple[MPI.Comm, int, int]
 ```
 
 
@@ -287,7 +288,7 @@ All processes receive a list of all results.
 ## `reduce_to_main`
 
 ```python
-reduce_to_main(op: str | mpi4py.MPI.Op = sum, comm: MPI.Comm = MPI.COMM_WORLD) -> Callable
+reduce_to_main(op: str | MPI.Op = 'sum', comm: MPI.Comm = MPI.COMM_WORLD) -> Callable
 ```
 
 
@@ -316,7 +317,7 @@ Rank 0 receives the reduced result, other ranks receive None.
 ## `reduce_to_process`
 
 ```python
-reduce_to_process(process_rank: int, op: str | mpi4py.MPI.Op = sum, comm: MPI.Comm = MPI.COMM_WORLD) -> Callable
+reduce_to_process(process_rank: int, op: str | MPI.Op = 'sum', comm: MPI.Comm = MPI.COMM_WORLD) -> Callable
 ```
 
 
@@ -347,7 +348,7 @@ The specified rank receives the reduced result, other ranks receive None.
 ## `reduce_to_all`
 
 ```python
-reduce_to_all(op: str | mpi4py.MPI.Op = sum, comm: MPI.Comm = MPI.COMM_WORLD) -> Callable
+reduce_to_all(op: str | MPI.Op = 'sum', comm: MPI.Comm = MPI.COMM_WORLD) -> Callable
 ```
 
 
