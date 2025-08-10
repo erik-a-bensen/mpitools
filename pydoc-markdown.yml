@@ -6,13 +6,7 @@ loaders:
 processors:
   - type: filter
     expression: not name.startswith('_')
-  - type: smart
-  - type: crossref
 
 renderer:
   type: markdown
   filename: null
-  render_module_header: false  # Don't render the main module header
-  insert_header_anchors: false  # Don't insert those <a id="..."> tags
-  render_typehints: true  # Include type hints
-  signature_with_def: false  # Don't include 'def' in signatures
