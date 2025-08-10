@@ -52,7 +52,7 @@ jobs:
                       if param.annotation != inspect.Parameter.empty:
                           annotation = str(param.annotation)
                           # Clean up common type annotations
-                          annotation = annotation.replace('mpi4py.MPI.Comm', 'MPI.Comm')
+                          annotation = annotation.replace('mpi4py.MPI.', 'MPI.')  # Handle all MPI types
                           annotation = annotation.replace('collections.abc.Callable', 'Callable')
                           annotation = annotation.replace('typing.', '')
                           
@@ -76,6 +76,8 @@ jobs:
                               default = 'MPI.COMM_WORLD'
                           elif 'Exception' in default:
                               default = 'Exception'
+                          elif default == 'sum':  # Handle the 'sum' default for reduce operations
+                              default = '\'sum\''
                           elif default.startswith('<') and default.endswith('>'):
                               # Generic cleanup for object representations
                               if 'COMM_WORLD' in str(param.default.__class__.__name__) or 'Comm' in str(type(param.default).__name__):
@@ -88,6 +90,7 @@ jobs:
                   return_annotation = ''
                   if sig.return_annotation != inspect.Signature.empty:
                       ret_ann = str(sig.return_annotation)
+                      ret_ann = ret_ann.replace('mpi4py.MPI.', 'MPI.')  # Handle all MPI types in return
                       ret_ann = ret_ann.replace('collections.abc.Callable', 'Callable')
                       ret_ann = ret_ann.replace('typing.', '')
                       
