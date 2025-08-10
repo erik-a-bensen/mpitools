@@ -13,6 +13,7 @@ Description, installation, examples...
 
 
 
+
 # API Reference
 
 ## `setup_mpi`
@@ -31,7 +32,7 @@ Returns:
 ## `abort_on_error`
 
 ```python
-abort_on_error(exception_type: <class 'Exception'> = Exception, comm: <class 'MPI.Comm'> = MPI.COMM_WORLD) -> <class 'Callable'>
+abort_on_error(exception_type: Exception = Exception, comm: MPI.Comm = MPI.COMM_WORLD) -> Callable
 ```
 
 
@@ -57,7 +58,7 @@ Prints error traceback and calls comm.Abort(1) to terminate all processes.
 ## `eval_on_main`
 
 ```python
-eval_on_main(comm: <class 'MPI.Comm'> = MPI.COMM_WORLD) -> <class 'Callable'>
+eval_on_main(comm: MPI.Comm = MPI.COMM_WORLD) -> Callable
 ```
 
 
@@ -81,7 +82,7 @@ Function runs only on rank 0, returns None on all other ranks.
 ## `eval_on_workers`
 
 ```python
-eval_on_workers(comm: <class 'MPI.Comm'> = MPI.COMM_WORLD) -> <class 'Callable'>
+eval_on_workers(comm: MPI.Comm = MPI.COMM_WORLD) -> Callable
 ```
 
 
@@ -105,7 +106,7 @@ Function runs only on ranks 1, 2, ..., n-1, returns None on rank 0.
 ## `eval_on_single`
 
 ```python
-eval_on_single(process_rank: <class 'int'>, comm: <class 'MPI.Comm'> = MPI.COMM_WORLD) -> <class 'Callable'>
+eval_on_single(process_rank: int, comm: MPI.Comm = MPI.COMM_WORLD) -> Callable
 ```
 
 
@@ -131,7 +132,7 @@ Function runs only on the specified rank, returns None on all other ranks.
 ## `eval_on_select`
 
 ```python
-eval_on_select(process_ranks: list[int], comm: <class 'MPI.Comm'> = MPI.COMM_WORLD) -> <class 'Callable'>
+eval_on_select(process_ranks: list[int], comm: MPI.Comm = MPI.COMM_WORLD) -> Callable
 ```
 
 
@@ -157,7 +158,7 @@ Function runs only on ranks in process_ranks, returns None on all other ranks.
 ## `broadcast_from_main`
 
 ```python
-broadcast_from_main(comm: <class 'MPI.Comm'> = MPI.COMM_WORLD) -> <class 'Callable'>
+broadcast_from_main(comm: MPI.Comm = MPI.COMM_WORLD) -> Callable
 ```
 
 
@@ -182,7 +183,7 @@ All processes receive the same return value.
 ## `broadcast_from_process`
 
 ```python
-broadcast_from_process(process_rank: <class 'int'>, comm: <class 'MPI.Comm'> = MPI.COMM_WORLD) -> <class 'Callable'>
+broadcast_from_process(process_rank: int, comm: MPI.Comm = MPI.COMM_WORLD) -> Callable
 ```
 
 
@@ -209,7 +210,7 @@ All processes receive the same return value.
 ## `gather_to_main`
 
 ```python
-gather_to_main(comm: <class 'MPI.Comm'> = MPI.COMM_WORLD) -> <class 'Callable'>
+gather_to_main(comm: MPI.Comm = MPI.COMM_WORLD) -> Callable
 ```
 
 
@@ -234,7 +235,7 @@ Rank 0 receives a list of all results, other ranks receive None.
 ## `gather_to_process`
 
 ```python
-gather_to_process(process_rank: <class 'int'>, comm: <class 'MPI.Comm'> = MPI.COMM_WORLD) -> <class 'Callable'>
+gather_to_process(process_rank: int, comm: MPI.Comm = MPI.COMM_WORLD) -> Callable
 ```
 
 
@@ -261,7 +262,7 @@ The specified rank receives a list of all results, other ranks receive None.
 ## `gather_to_all`
 
 ```python
-gather_to_all(comm: <class 'MPI.Comm'> = MPI.COMM_WORLD) -> <class 'Callable'>
+gather_to_all(comm: MPI.Comm = MPI.COMM_WORLD) -> Callable
 ```
 
 
@@ -286,7 +287,7 @@ All processes receive a list of all results.
 ## `reduce_to_main`
 
 ```python
-reduce_to_main(op: str | mpi4py.MPI.Op = sum, comm: <class 'MPI.Comm'> = MPI.COMM_WORLD) -> <class 'Callable'>
+reduce_to_main(op: str | mpi4py.MPI.Op = sum, comm: MPI.Comm = MPI.COMM_WORLD) -> Callable
 ```
 
 
@@ -315,7 +316,7 @@ Rank 0 receives the reduced result, other ranks receive None.
 ## `reduce_to_process`
 
 ```python
-reduce_to_process(process_rank: <class 'int'>, op: str | mpi4py.MPI.Op = sum, comm: <class 'MPI.Comm'> = MPI.COMM_WORLD) -> <class 'Callable'>
+reduce_to_process(process_rank: int, op: str | mpi4py.MPI.Op = sum, comm: MPI.Comm = MPI.COMM_WORLD) -> Callable
 ```
 
 
@@ -346,7 +347,7 @@ The specified rank receives the reduced result, other ranks receive None.
 ## `reduce_to_all`
 
 ```python
-reduce_to_all(op: str | mpi4py.MPI.Op = sum, comm: <class 'MPI.Comm'> = MPI.COMM_WORLD) -> <class 'Callable'>
+reduce_to_all(op: str | mpi4py.MPI.Op = sum, comm: MPI.Comm = MPI.COMM_WORLD) -> Callable
 ```
 
 
@@ -381,7 +382,7 @@ All processes receive the same reduced result.
 ## `Task`
 
 ```python
-Task(task_id: <class 'str'>, kwargs)
+Task(task_id: str, kwargs)
 ```
 
 
@@ -392,7 +393,7 @@ Users should inherit from this class and implement the execute method.
 ## `TaskResult`
 
 ```python
-TaskResult(task_id: <class 'str'>, result: Any, execution_time: <class 'float'> = 0.0, worker_rank: <class 'int'> = -1)
+TaskResult(task_id: str, result: Any, execution_time: float = 0.0, worker_rank: int = -1)
 ```
 
 Container for task execution results
@@ -400,7 +401,7 @@ Container for task execution results
 ## `MPIQueue`
 
 ```python
-MPIQueue(comm: <class 'MPI.Comm'> = MPI.COMM_WORLD)
+MPIQueue(comm: MPI.Comm = MPI.COMM_WORLD)
 ```
 
 
