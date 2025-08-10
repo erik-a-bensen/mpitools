@@ -36,20 +36,49 @@ jobs:
           sys.path.insert(0, 'src')
           import mpitools
           import inspect
+          import pkgutil
+          import importlib
           
-          docs = []
-          for name in dir(mpitools):
-              if not name.startswith('_') and hasattr(getattr(mpitools, name), '__doc__'):
-                  func = getattr(mpitools, name)
-                  if callable(func) and func.__doc__:
+          def document_module(module, module_name):
+              docs = []
+              print(f'=== Documenting {module_name} ===')
+              
+              for name in dir(module):
+                  if not name.startswith('_'):
+                      obj = getattr(module, name)
+                      if hasattr(obj, '__doc__') and obj.__doc__:
+                          if callable(obj):
+                              try:
+                                  sig = str(inspect.signature(obj))
+                              except (ValueError, TypeError):
+                                  sig = '(...)'
+                              docs.append(f'## \`{name}\`\n\n\`\`\`python\n{name}{sig}\n\`\`\`\n\n{obj.__doc__}\n')
+                          elif inspect.isclass(obj):
+                              # Document classes
+                              docs.append(f'## \`{name}\` (class)\n\n{obj.__doc__}\n')
+              return docs
+          
+          all_docs = []
+          
+          # Document main module
+          main_docs = document_module(mpitools, 'mpitools')
+          all_docs.extend(main_docs)
+          
+          # Discover and document subpackages (only those with __init__.py)
+          package_path = mpitools.__path__[0] if hasattr(mpitools, '__path__') else None
+          if package_path:
+              for importer, modname, ispkg in pkgutil.iter_modules([package_path]):
+                  if not modname.startswith('_') and ispkg:  # Only include packages (with __init__.py)
                       try:
-                          sig = str(inspect.signature(func))
-                      except (ValueError, TypeError):
-                          sig = '(...)'
-                      docs.append(f'## \`{name}\`\n\n\`\`\`python\n{name}{sig}\n\`\`\`\n\n{func.__doc__}\n')
+                          submodule = importlib.import_module(f'mpitools.{modname}')
+                          all_docs.append(f'\n---\n\n# {modname.title()} Module\n\n')
+                          sub_docs = document_module(submodule, f'mpitools.{modname}')
+                          all_docs.extend(sub_docs)
+                      except ImportError as e:
+                          print(f'Could not import mpitools.{modname}: {e}')
           
           with open('temp_docs.md', 'w') as f:
-              f.write('\n'.join(docs))
+              f.write('\n'.join(all_docs))
           "
           
       - name: Update README with custom docs
