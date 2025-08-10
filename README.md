@@ -101,6 +101,9 @@ def risky_computation():
 
 ## Core Decorators
 
+### Error Handling
+- `@abort_on_error()` - Abort all processes if any process raises an exception
+
 ### Work Distribution
 - `@eval_on_main()` - Execute only on rank 0
 - `@eval_on_workers()` - Execute only on worker ranks (1, 2, ...)  
