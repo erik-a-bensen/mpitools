@@ -1,5 +1,10 @@
 # mpitools
 
+![Development Status](https://img.shields.io/badge/status-alpha-orange)
+![Version](https://img.shields.io/badge/version-0.1.0-blue)
+
+> **⚠️ Development Notice**: This package is in active development. The API may change significantly between versions until v1.0.0. Use in production environments is not recommended.
+
 A Python package providing simple decorators and utilities for MPI (Message Passing Interface) parallel computing. Built on top of mpi4py, mpitools makes it easy to write parallel code with minimal boilerplate.
 
 ## Features
