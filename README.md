@@ -15,6 +15,7 @@ Description, installation, examples...
 
 
 
+
 # API Reference
 
 ## `setup_mpi`
@@ -380,32 +381,67 @@ All processes receive the same reduced result.
 # Queue Submodule
 
 
-## `Task`
-
-```python
-Task(task_id: str, kwargs)
-```
+## `Task` (class)
 
 
 Abstract base class for tasks.
 Users should inherit from this class and implement the execute method.
 
 
-## `TaskResult`
+### Methods
+
+### `execute`
 
 ```python
-TaskResult(task_id: str, result: Any, execution_time: float = 0.0, worker_rank: int = -1)
+execute(self) -> Any
 ```
+
+
+Execute the task and return the result.
+This method must be implemented by subclasses.
+
+
+## `TaskResult` (class)
 
 Container for task execution results
 
-## `MPIQueue`
-
-```python
-MPIQueue(comm: MPI.Comm = MPI.COMM_WORLD)
-```
+## `MPIQueue` (class)
 
 
 Interface for the MPI queue system.
 Automatically determines whether to run as manager or worker based on rank.
+
+
+### Methods
+
+### `add_task`
+
+```python
+add_task(self, task: mpitools.queue.tasks.Task)
+```
+
+Add a task to the queue (only valid on manager)
+
+### `add_tasks`
+
+```python
+add_tasks(self, tasks: List[mpitools.queue.tasks.Task])
+```
+
+Add multiple tasks to the queue (only valid on manager)
+
+### `run`
+
+```python
+run(self, timeout: Optional[float] = None) -> Optional[dict]
+```
+
+
+Run the queue system.
+
+For manager (rank 0): distributes tasks and returns results
+For workers (rank > 0): executes tasks until shutdown
+
+Returns:
+    Dictionary of results (only on manager), None on workers
 
