@@ -38,6 +38,7 @@ jobs:
           import inspect
           import pkgutil
           import importlib
+          import re
           
           def clean_signature(func):
               try:
@@ -55,6 +56,10 @@ jobs:
                           annotation = annotation.replace('mpi4py.MPI.', 'MPI.')  # Handle all MPI types
                           annotation = annotation.replace('collections.abc.Callable', 'Callable')
                           annotation = annotation.replace('typing.', '')
+                          
+                          # Clean up internal module paths to public import paths (generic)
+                          # Pattern: mpitools.{submodule}.{internal_module}.{Class} -> mpitools.{submodule}.{Class}
+                          annotation = re.sub(r'mpitools\.([^.]+)\.([^.]+)\.([^.]+)', r'mpitools.\1.\3', annotation)
                           
                           # Remove <class '...'> wrappers
                           if annotation.startswith('<class \'') and annotation.endswith('\'>'):
@@ -93,6 +98,9 @@ jobs:
                       ret_ann = ret_ann.replace('mpi4py.MPI.', 'MPI.')  # Handle all MPI types in return
                       ret_ann = ret_ann.replace('collections.abc.Callable', 'Callable')
                       ret_ann = ret_ann.replace('typing.', '')
+                      
+                      # Clean up internal module paths in return types too (generic)
+                      ret_ann = re.sub(r'mpitools\.([^.]+)\.([^.]+)\.([^.]+)', r'mpitools.\1.\3', ret_ann)
                       
                       # Remove <class '...'> wrappers from return type
                       if ret_ann.startswith('<class \'') and ret_ann.endswith('\'>'):
