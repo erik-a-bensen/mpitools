@@ -11,12 +11,26 @@ Description, installation, examples...
 
 
 
-## API Reference
+
+# API Reference
+
+## `setup_mpi`
+
+```python
+setup_mpi() -> tuple[mpi4py.MPI.Comm, int, int]
+```
+
+
+Initialize MPI and return the communicator, rank, and size.
+
+Returns:
+    tuple: A tuple containing the MPI communicator, rank, and size.
+
 
 ## `abort_on_error`
 
 ```python
-abort_on_error(exception_type: Exception = <class 'Exception'>, comm: mpi4py.MPI.Comm = <mpi4py.MPI.Intracomm object at 0x7f2f70b9d6b0>) -> collections.abc.Callable
+abort_on_error(exception_type: <class 'Exception'> = Exception, comm: <class 'MPI.Comm'> = MPI.COMM_WORLD) -> <class 'Callable'>
 ```
 
 
@@ -39,10 +53,110 @@ Notes
 Prints error traceback and calls comm.Abort(1) to terminate all processes.
 
 
+## `eval_on_main`
+
+```python
+eval_on_main(comm: <class 'MPI.Comm'> = MPI.COMM_WORLD) -> <class 'Callable'>
+```
+
+
+Decorator that only executes function on rank 0 (main process).
+
+Parameters
+----------
+comm : MPI.Comm, optional
+    MPI communicator. Defaults to COMM_WORLD.
+
+Returns
+-------
+Callable
+    Decorator function.
+
+Notes
+-----
+Function runs only on rank 0, returns None on all other ranks.
+
+
+## `eval_on_workers`
+
+```python
+eval_on_workers(comm: <class 'MPI.Comm'> = MPI.COMM_WORLD) -> <class 'Callable'>
+```
+
+
+Decorator that only executes function on worker processes (rank != 0).
+
+Parameters
+----------
+comm : MPI.Comm, optional
+    MPI communicator. Defaults to COMM_WORLD.
+
+Returns
+-------
+Callable
+    Decorator function.
+
+Notes
+-----
+Function runs only on ranks 1, 2, ..., n-1, returns None on rank 0.
+
+
+## `eval_on_single`
+
+```python
+eval_on_single(process_rank: <class 'int'>, comm: <class 'MPI.Comm'> = MPI.COMM_WORLD) -> <class 'Callable'>
+```
+
+
+Decorator that only executes function on a specific process rank.
+
+Parameters
+----------
+process_rank : int
+    Rank of the process that should execute the function.
+comm : MPI.Comm, optional
+    MPI communicator. Defaults to COMM_WORLD.
+
+Returns
+-------
+Callable
+    Decorator function.
+
+Notes
+-----
+Function runs only on the specified rank, returns None on all other ranks.
+
+
+## `eval_on_select`
+
+```python
+eval_on_select(process_ranks: list[int], comm: <class 'MPI.Comm'> = MPI.COMM_WORLD) -> <class 'Callable'>
+```
+
+
+Decorator that only executes function on selected process ranks.
+
+Parameters
+----------
+process_ranks : list[int]
+    List of ranks that should execute the function.
+comm : MPI.Comm, optional
+    MPI communicator. Defaults to COMM_WORLD.
+
+Returns
+-------
+Callable
+    Decorator function.
+
+Notes
+-----
+Function runs only on ranks in process_ranks, returns None on all other ranks.
+
+
 ## `broadcast_from_main`
 
 ```python
-broadcast_from_main(comm: mpi4py.MPI.Comm = <mpi4py.MPI.Intracomm object at 0x7f2f70b9d6b0>) -> collections.abc.Callable
+broadcast_from_main(comm: <class 'MPI.Comm'> = MPI.COMM_WORLD) -> <class 'Callable'>
 ```
 
 
@@ -67,7 +181,7 @@ All processes receive the same return value.
 ## `broadcast_from_process`
 
 ```python
-broadcast_from_process(process_rank: int, comm: mpi4py.MPI.Comm = <mpi4py.MPI.Intracomm object at 0x7f2f70b9d6b0>) -> collections.abc.Callable
+broadcast_from_process(process_rank: <class 'int'>, comm: <class 'MPI.Comm'> = MPI.COMM_WORLD) -> <class 'Callable'>
 ```
 
 
@@ -91,135 +205,10 @@ Function runs only on the specified rank, result is broadcast to all ranks.
 All processes receive the same return value.
 
 
-## `eval_on_main`
-
-```python
-eval_on_main(comm: mpi4py.MPI.Comm = <mpi4py.MPI.Intracomm object at 0x7f2f70b9d6b0>) -> collections.abc.Callable
-```
-
-
-Decorator that only executes function on rank 0 (main process).
-
-Parameters
-----------
-comm : MPI.Comm, optional
-    MPI communicator. Defaults to COMM_WORLD.
-
-Returns
--------
-Callable
-    Decorator function.
-
-Notes
------
-Function runs only on rank 0, returns None on all other ranks.
-
-
-## `eval_on_select`
-
-```python
-eval_on_select(process_ranks: list[int], comm: mpi4py.MPI.Comm = <mpi4py.MPI.Intracomm object at 0x7f2f70b9d6b0>) -> collections.abc.Callable
-```
-
-
-Decorator that only executes function on selected process ranks.
-
-Parameters
-----------
-process_ranks : list[int]
-    List of ranks that should execute the function.
-comm : MPI.Comm, optional
-    MPI communicator. Defaults to COMM_WORLD.
-
-Returns
--------
-Callable
-    Decorator function.
-
-Notes
------
-Function runs only on ranks in process_ranks, returns None on all other ranks.
-
-
-## `eval_on_single`
-
-```python
-eval_on_single(process_rank: int, comm: mpi4py.MPI.Comm = <mpi4py.MPI.Intracomm object at 0x7f2f70b9d6b0>) -> collections.abc.Callable
-```
-
-
-Decorator that only executes function on a specific process rank.
-
-Parameters
-----------
-process_rank : int
-    Rank of the process that should execute the function.
-comm : MPI.Comm, optional
-    MPI communicator. Defaults to COMM_WORLD.
-
-Returns
--------
-Callable
-    Decorator function.
-
-Notes
------
-Function runs only on the specified rank, returns None on all other ranks.
-
-
-## `eval_on_workers`
-
-```python
-eval_on_workers(comm: mpi4py.MPI.Comm = <mpi4py.MPI.Intracomm object at 0x7f2f70b9d6b0>) -> collections.abc.Callable
-```
-
-
-Decorator that only executes function on worker processes (rank != 0).
-
-Parameters
-----------
-comm : MPI.Comm, optional
-    MPI communicator. Defaults to COMM_WORLD.
-
-Returns
--------
-Callable
-    Decorator function.
-
-Notes
------
-Function runs only on ranks 1, 2, ..., n-1, returns None on rank 0.
-
-
-## `gather_to_all`
-
-```python
-gather_to_all(comm: mpi4py.MPI.Comm = <mpi4py.MPI.Intracomm object at 0x7f2f70b9d6b0>) -> collections.abc.Callable
-```
-
-
-Decorator that executes function on all processes and gathers results to all processes.
-
-Parameters
-----------
-comm : MPI.Comm, optional
-    MPI communicator. Defaults to COMM_WORLD.
-
-Returns
--------
-Callable
-    Decorator function.
-
-Notes
------
-Function runs on all processes, results are gathered to all ranks using comm.allgather().
-All processes receive a list of all results.
-
-
 ## `gather_to_main`
 
 ```python
-gather_to_main(comm: mpi4py.MPI.Comm = <mpi4py.MPI.Intracomm object at 0x7f2f70b9d6b0>) -> collections.abc.Callable
+gather_to_main(comm: <class 'MPI.Comm'> = MPI.COMM_WORLD) -> <class 'Callable'>
 ```
 
 
@@ -244,7 +233,7 @@ Rank 0 receives a list of all results, other ranks receive None.
 ## `gather_to_process`
 
 ```python
-gather_to_process(process_rank: int, comm: mpi4py.MPI.Comm = <mpi4py.MPI.Intracomm object at 0x7f2f70b9d6b0>) -> collections.abc.Callable
+gather_to_process(process_rank: <class 'int'>, comm: <class 'MPI.Comm'> = MPI.COMM_WORLD) -> <class 'Callable'>
 ```
 
 
@@ -268,21 +257,17 @@ Function runs on all processes, results are gathered to specified rank.
 The specified rank receives a list of all results, other ranks receive None.
 
 
-## `reduce_to_all`
+## `gather_to_all`
 
 ```python
-reduce_to_all(op: str | mpi4py.MPI.Op = 'sum', comm: mpi4py.MPI.Comm = <mpi4py.MPI.Intracomm object at 0x7f2f70b9d6b0>) -> collections.abc.Callable
+gather_to_all(comm: <class 'MPI.Comm'> = MPI.COMM_WORLD) -> <class 'Callable'>
 ```
 
 
-Decorator that executes function on all processes and reduces results to all processes.
+Decorator that executes function on all processes and gathers results to all processes.
 
 Parameters
 ----------
-op : str or MPI.Op, optional
-    Reduction operation to apply. Defaults to 'sum'.
-    String options: 'sum', 'prod', 'max', 'min', 'land', 'band', 'lor', 'bor', 
-    'lxor', 'bxor', 'maxloc', 'minloc'.
 comm : MPI.Comm, optional
     MPI communicator. Defaults to COMM_WORLD.
 
@@ -293,14 +278,14 @@ Callable
 
 Notes
 -----
-Function runs on all processes, results are reduced to all ranks using comm.allreduce().
-All processes receive the same reduced result.
+Function runs on all processes, results are gathered to all ranks using comm.allgather().
+All processes receive a list of all results.
 
 
 ## `reduce_to_main`
 
 ```python
-reduce_to_main(op: str | mpi4py.MPI.Op = 'sum', comm: mpi4py.MPI.Comm = <mpi4py.MPI.Intracomm object at 0x7f2f70b9d6b0>) -> collections.abc.Callable
+reduce_to_main(op: str | mpi4py.MPI.Op = sum, comm: <class 'MPI.Comm'> = MPI.COMM_WORLD) -> <class 'Callable'>
 ```
 
 
@@ -329,7 +314,7 @@ Rank 0 receives the reduced result, other ranks receive None.
 ## `reduce_to_process`
 
 ```python
-reduce_to_process(process_rank: int, op: str | mpi4py.MPI.Op = 'sum', comm: mpi4py.MPI.Comm = <mpi4py.MPI.Intracomm object at 0x7f2f70b9d6b0>) -> collections.abc.Callable
+reduce_to_process(process_rank: <class 'int'>, op: str | mpi4py.MPI.Op = sum, comm: <class 'MPI.Comm'> = MPI.COMM_WORLD) -> <class 'Callable'>
 ```
 
 
@@ -357,17 +342,33 @@ Function runs on all processes, results are reduced to specified rank using comm
 The specified rank receives the reduced result, other ranks receive None.
 
 
-## `setup_mpi`
+## `reduce_to_all`
 
 ```python
-setup_mpi() -> tuple[mpi4py.MPI.Comm, int, int]
+reduce_to_all(op: str | mpi4py.MPI.Op = sum, comm: <class 'MPI.Comm'> = MPI.COMM_WORLD) -> <class 'Callable'>
 ```
 
 
-Initialize MPI and return the communicator, rank, and size.
+Decorator that executes function on all processes and reduces results to all processes.
 
-Returns:
-    tuple: A tuple containing the MPI communicator, rank, and size.
+Parameters
+----------
+op : str or MPI.Op, optional
+    Reduction operation to apply. Defaults to 'sum'.
+    String options: 'sum', 'prod', 'max', 'min', 'land', 'band', 'lor', 'bor', 
+    'lxor', 'bxor', 'maxloc', 'minloc'.
+comm : MPI.Comm, optional
+    MPI communicator. Defaults to COMM_WORLD.
+
+Returns
+-------
+Callable
+    Decorator function.
+
+Notes
+-----
+Function runs on all processes, results are reduced to all ranks using comm.allreduce().
+All processes receive the same reduced result.
 
 
 
@@ -376,21 +377,10 @@ Returns:
 # Queue Module
 
 
-## `MPIQueue`
-
-```python
-MPIQueue(comm: mpi4py.MPI.Comm = <mpi4py.MPI.Intracomm object at 0x7f2f70b9d6b0>)
-```
-
-
-Interface for the MPI queue system.
-Automatically determines whether to run as manager or worker based on rank.
-
-
 ## `Task`
 
 ```python
-Task(task_id: str, **kwargs)
+Task(task_id: <class 'str'>, kwargs)
 ```
 
 
@@ -401,7 +391,18 @@ Users should inherit from this class and implement the execute method.
 ## `TaskResult`
 
 ```python
-TaskResult(task_id: str, result: Any, execution_time: float = 0.0, worker_rank: int = -1)
+TaskResult(task_id: <class 'str'>, result: Any, execution_time: <class 'float'> = 0.0, worker_rank: <class 'int'> = -1)
 ```
 
 Container for task execution results
+
+## `MPIQueue`
+
+```python
+MPIQueue(comm: <class 'MPI.Comm'> = MPI.COMM_WORLD)
+```
+
+
+Interface for the MPI queue system.
+Automatically determines whether to run as manager or worker based on rank.
+
