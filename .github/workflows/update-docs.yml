@@ -104,6 +104,32 @@ jobs:
               except (ValueError, TypeError):
                   return '(...)'
           
+          def document_class(cls, class_name):
+              docs = []
+              # Document the class itself
+              if cls.__doc__:
+                  docs.append(f'## \`{class_name}\` (class)\n\n{cls.__doc__}\n')
+              else:
+                  docs.append(f'## \`{class_name}\` (class)\n\n*No description available.*\n')
+              
+              # Document public methods
+              methods = []
+              for method_name in dir(cls):
+                  if not method_name.startswith('_'):
+                      try:
+                          method = getattr(cls, method_name)
+                          if callable(method) and hasattr(method, '__doc__') and method.__doc__:
+                              sig = clean_signature(method)
+                              methods.append(f'### \`{method_name}\`\n\n\`\`\`python\n{method_name}{sig}\n\`\`\`\n\n{method.__doc__}\n')
+                      except (AttributeError, TypeError):
+                          continue
+              
+              if methods:
+                  docs.append('### Methods\n')
+                  docs.extend(methods)
+              
+              return docs
+          
           def document_module(module, module_name):
               docs = []
               print(f'=== Documenting {module_name} ===')
@@ -120,12 +146,14 @@ jobs:
                   if hasattr(module, name):
                       obj = getattr(module, name)
                       if hasattr(obj, '__doc__') and obj.__doc__:
-                          if callable(obj):
+                          if inspect.isclass(obj):
+                              # Document classes with their methods
+                              class_docs = document_class(obj, name)
+                              docs.extend(class_docs)
+                          elif callable(obj):
+                              # Document functions
                               sig = clean_signature(obj)
                               docs.append(f'## \`{name}\`\n\n\`\`\`python\n{name}{sig}\n\`\`\`\n\n{obj.__doc__}\n')
-                          elif inspect.isclass(obj):
-                              # Document classes
-                              docs.append(f'## \`{name}\` (class)\n\n{obj.__doc__}\n')
               return docs
           
           all_docs = []
