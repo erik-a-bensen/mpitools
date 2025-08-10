@@ -43,8 +43,50 @@ jobs:
           def clean_docstring(docstring):
               if not docstring:
                   return None
-              # Use inspect.cleandoc to properly handle indentation and whitespace
-              return inspect.cleandoc(docstring)
+              
+              # Clean the docstring first
+              cleaned = inspect.cleandoc(docstring)
+              
+              # Convert to markdown-friendly format
+              lines = cleaned.split('\n')
+              result = []
+              i = 0
+              
+              while i < len(lines):
+                  line = lines[i]
+                  
+                  # Detect section headers (Parameters, Returns, Notes, etc.)
+                  if line and not line.startswith(' ') and i + 1 < len(lines) and lines[i + 1].strip() == '-' * len(line.strip()):
+                      # This is a section header with underline
+                      result.append(f'**{line.strip()}:**')
+                      result.append('')  # Add blank line after header
+                      i += 2  # Skip the underline
+                      continue
+                  
+                  # Detect indented content (preserve as code-like formatting)
+                  if line.startswith('    ') or line.startswith('\t'):
+                      # Indented content - preserve formatting
+                      result.append(line)
+                  elif line.strip() == '':
+                      # Blank line - preserve
+                      result.append('')
+                  else:
+                      # Regular text line
+                      result.append(line)
+                  
+                  i += 1
+              
+              # Convert to markdown with proper spacing
+              markdown_lines = []
+              for i, line in enumerate(result):
+                  if line == '':
+                      # Only add blank line if the next line isn't also blank
+                      if i + 1 < len(result) and result[i + 1] != '':
+                          markdown_lines.append('')
+                  else:
+                      markdown_lines.append(line)
+              
+              return '\n'.join(markdown_lines)
           
           def clean_signature(func):
               try:
@@ -180,14 +222,21 @@ jobs:
               
               # Document the class header
               docs.append(f'## \`{class_name}\` (class)')
+              docs.append('')
               
               # Add constructor signature if __init__ exists
               if hasattr(cls, '__init__'):
                   try:
                       constructor_sig = clean_constructor_signature(cls.__init__, class_name)
-                      docs.append(f'\`\`\`python\n{constructor_sig}\n\`\`\`')
+                      docs.append(f'\`\`\`python')
+                      docs.append(constructor_sig)
+                      docs.append('\`\`\`')
+                      docs.append('')
                   except (AttributeError, TypeError):
-                      docs.append(f'\`\`\`python\n{class_name}(...)\n\`\`\`')
+                      docs.append(f'\`\`\`python')
+                      docs.append(f'{class_name}(...)')
+                      docs.append('\`\`\`')
+                      docs.append('')
               
               # Handle docstrings - show both class and __init__ docstrings if they exist
               class_docstring = clean_docstring(cls.__doc__)
@@ -198,17 +247,23 @@ jobs:
               if class_docstring and init_docstring:
                   # Both exist - show class docstring, then init docstring
                   docs.append(class_docstring)
+                  docs.append('')
                   docs.append('**Constructor:**')
+                  docs.append('')
                   docs.append(init_docstring)
+                  docs.append('')
               elif class_docstring:
                   # Only class docstring
                   docs.append(class_docstring)
+                  docs.append('')
               elif init_docstring:
                   # Only init docstring
                   docs.append(init_docstring)
+                  docs.append('')
               else:
                   # No docstrings
                   docs.append('*No description available.*')
+                  docs.append('')
               
               # Document public methods
               methods = []
@@ -221,13 +276,19 @@ jobs:
                               cleaned_method_doc = clean_docstring(method.__doc__)
                               if cleaned_method_doc:
                                   methods.append(f'### \`{method_name}\`')
-                                  methods.append(f'\`\`\`python\n{method_name}{sig}\n\`\`\`')
+                                  methods.append('')
+                                  methods.append('\`\`\`python')
+                                  methods.append(f'{method_name}{sig}')
+                                  methods.append('\`\`\`')
+                                  methods.append('')
                                   methods.append(cleaned_method_doc)
+                                  methods.append('')
                       except (AttributeError, TypeError):
                           continue
               
               if methods:
                   docs.append('### Methods')
+                  docs.append('')
                   docs.extend(methods)
               
               return docs
@@ -258,14 +319,20 @@ jobs:
                           cleaned_func_doc = clean_docstring(obj.__doc__)
                           if cleaned_func_doc:
                               docs.append(f'## \`{name}\`')
-                              docs.append(f'\`\`\`python\n{name}{sig}\n\`\`\`')
+                              docs.append('')
+                              docs.append('\`\`\`python')
+                              docs.append(f'{name}{sig}')
+                              docs.append('\`\`\`')
+                              docs.append('')
                               docs.append(cleaned_func_doc)
+                              docs.append('')
               return docs
           
           all_docs = []
           
           # Add header to the API docs
           all_docs.append('# API Reference')
+          all_docs.append('')
           all_docs.append('> **⚠️ Development Version**: This API is subject to change until v1.0.0. Breaking changes may occur in minor releases.')
           all_docs.append('')
           
@@ -280,7 +347,6 @@ jobs:
                   if not modname.startswith('_') and ispkg:  # Only include packages (with __init__.py)
                       try:
                           submodule = importlib.import_module(f'mpitools.{modname}')
-                          all_docs.append('')
                           all_docs.append('---')
                           all_docs.append('')
                           all_docs.append(f'# {modname.title()} Submodule')
