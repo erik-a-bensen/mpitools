@@ -12,6 +12,7 @@ Description, installation, examples...
 
 
 
+
 # API Reference
 
 ## `setup_mpi`
@@ -374,7 +375,7 @@ All processes receive the same reduced result.
 
 ---
 
-# Queue Module
+# Queue Submodule
 
 
 ## `Task`
