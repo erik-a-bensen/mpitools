@@ -10,12 +10,13 @@ Description, installation, examples...
 
 
 
+
 ## API Reference
 
 ## `abort_on_error`
 
 ```python
-abort_on_error(exception_type: Exception = <class 'Exception'>, comm: mpi4py.MPI.Comm = <mpi4py.MPI.Intracomm object at 0x7f856a1843c0>) -> collections.abc.Callable
+abort_on_error(exception_type: Exception = <class 'Exception'>, comm: mpi4py.MPI.Comm = <mpi4py.MPI.Intracomm object at 0x7f2f70b9d6b0>) -> collections.abc.Callable
 ```
 
 
@@ -41,7 +42,7 @@ Prints error traceback and calls comm.Abort(1) to terminate all processes.
 ## `broadcast_from_main`
 
 ```python
-broadcast_from_main(comm: mpi4py.MPI.Comm = <mpi4py.MPI.Intracomm object at 0x7f856a1843c0>) -> collections.abc.Callable
+broadcast_from_main(comm: mpi4py.MPI.Comm = <mpi4py.MPI.Intracomm object at 0x7f2f70b9d6b0>) -> collections.abc.Callable
 ```
 
 
@@ -66,7 +67,7 @@ All processes receive the same return value.
 ## `broadcast_from_process`
 
 ```python
-broadcast_from_process(process_rank: int, comm: mpi4py.MPI.Comm = <mpi4py.MPI.Intracomm object at 0x7f856a1843c0>) -> collections.abc.Callable
+broadcast_from_process(process_rank: int, comm: mpi4py.MPI.Comm = <mpi4py.MPI.Intracomm object at 0x7f2f70b9d6b0>) -> collections.abc.Callable
 ```
 
 
@@ -93,7 +94,7 @@ All processes receive the same return value.
 ## `eval_on_main`
 
 ```python
-eval_on_main(comm: mpi4py.MPI.Comm = <mpi4py.MPI.Intracomm object at 0x7f856a1843c0>) -> collections.abc.Callable
+eval_on_main(comm: mpi4py.MPI.Comm = <mpi4py.MPI.Intracomm object at 0x7f2f70b9d6b0>) -> collections.abc.Callable
 ```
 
 
@@ -117,7 +118,7 @@ Function runs only on rank 0, returns None on all other ranks.
 ## `eval_on_select`
 
 ```python
-eval_on_select(process_ranks: list[int], comm: mpi4py.MPI.Comm = <mpi4py.MPI.Intracomm object at 0x7f856a1843c0>) -> collections.abc.Callable
+eval_on_select(process_ranks: list[int], comm: mpi4py.MPI.Comm = <mpi4py.MPI.Intracomm object at 0x7f2f70b9d6b0>) -> collections.abc.Callable
 ```
 
 
@@ -143,7 +144,7 @@ Function runs only on ranks in process_ranks, returns None on all other ranks.
 ## `eval_on_single`
 
 ```python
-eval_on_single(process_rank: int, comm: mpi4py.MPI.Comm = <mpi4py.MPI.Intracomm object at 0x7f856a1843c0>) -> collections.abc.Callable
+eval_on_single(process_rank: int, comm: mpi4py.MPI.Comm = <mpi4py.MPI.Intracomm object at 0x7f2f70b9d6b0>) -> collections.abc.Callable
 ```
 
 
@@ -169,7 +170,7 @@ Function runs only on the specified rank, returns None on all other ranks.
 ## `eval_on_workers`
 
 ```python
-eval_on_workers(comm: mpi4py.MPI.Comm = <mpi4py.MPI.Intracomm object at 0x7f856a1843c0>) -> collections.abc.Callable
+eval_on_workers(comm: mpi4py.MPI.Comm = <mpi4py.MPI.Intracomm object at 0x7f2f70b9d6b0>) -> collections.abc.Callable
 ```
 
 
@@ -193,7 +194,7 @@ Function runs only on ranks 1, 2, ..., n-1, returns None on rank 0.
 ## `gather_to_all`
 
 ```python
-gather_to_all(comm: mpi4py.MPI.Comm = <mpi4py.MPI.Intracomm object at 0x7f856a1843c0>) -> collections.abc.Callable
+gather_to_all(comm: mpi4py.MPI.Comm = <mpi4py.MPI.Intracomm object at 0x7f2f70b9d6b0>) -> collections.abc.Callable
 ```
 
 
@@ -218,7 +219,7 @@ All processes receive a list of all results.
 ## `gather_to_main`
 
 ```python
-gather_to_main(comm: mpi4py.MPI.Comm = <mpi4py.MPI.Intracomm object at 0x7f856a1843c0>) -> collections.abc.Callable
+gather_to_main(comm: mpi4py.MPI.Comm = <mpi4py.MPI.Intracomm object at 0x7f2f70b9d6b0>) -> collections.abc.Callable
 ```
 
 
@@ -243,7 +244,7 @@ Rank 0 receives a list of all results, other ranks receive None.
 ## `gather_to_process`
 
 ```python
-gather_to_process(process_rank: int, comm: mpi4py.MPI.Comm = <mpi4py.MPI.Intracomm object at 0x7f856a1843c0>) -> collections.abc.Callable
+gather_to_process(process_rank: int, comm: mpi4py.MPI.Comm = <mpi4py.MPI.Intracomm object at 0x7f2f70b9d6b0>) -> collections.abc.Callable
 ```
 
 
@@ -270,7 +271,7 @@ The specified rank receives a list of all results, other ranks receive None.
 ## `reduce_to_all`
 
 ```python
-reduce_to_all(op: str | mpi4py.MPI.Op = 'sum', comm: mpi4py.MPI.Comm = <mpi4py.MPI.Intracomm object at 0x7f856a1843c0>) -> collections.abc.Callable
+reduce_to_all(op: str | mpi4py.MPI.Op = 'sum', comm: mpi4py.MPI.Comm = <mpi4py.MPI.Intracomm object at 0x7f2f70b9d6b0>) -> collections.abc.Callable
 ```
 
 
@@ -299,7 +300,7 @@ All processes receive the same reduced result.
 ## `reduce_to_main`
 
 ```python
-reduce_to_main(op: str | mpi4py.MPI.Op = 'sum', comm: mpi4py.MPI.Comm = <mpi4py.MPI.Intracomm object at 0x7f856a1843c0>) -> collections.abc.Callable
+reduce_to_main(op: str | mpi4py.MPI.Op = 'sum', comm: mpi4py.MPI.Comm = <mpi4py.MPI.Intracomm object at 0x7f2f70b9d6b0>) -> collections.abc.Callable
 ```
 
 
@@ -328,7 +329,7 @@ Rank 0 receives the reduced result, other ranks receive None.
 ## `reduce_to_process`
 
 ```python
-reduce_to_process(process_rank: int, op: str | mpi4py.MPI.Op = 'sum', comm: mpi4py.MPI.Comm = <mpi4py.MPI.Intracomm object at 0x7f856a1843c0>) -> collections.abc.Callable
+reduce_to_process(process_rank: int, op: str | mpi4py.MPI.Op = 'sum', comm: mpi4py.MPI.Comm = <mpi4py.MPI.Intracomm object at 0x7f2f70b9d6b0>) -> collections.abc.Callable
 ```
 
 
@@ -368,3 +369,39 @@ Initialize MPI and return the communicator, rank, and size.
 Returns:
     tuple: A tuple containing the MPI communicator, rank, and size.
 
+
+
+---
+
+# Queue Module
+
+
+## `MPIQueue`
+
+```python
+MPIQueue(comm: mpi4py.MPI.Comm = <mpi4py.MPI.Intracomm object at 0x7f2f70b9d6b0>)
+```
+
+
+Interface for the MPI queue system.
+Automatically determines whether to run as manager or worker based on rank.
+
+
+## `Task`
+
+```python
+Task(task_id: str, **kwargs)
+```
+
+
+Abstract base class for tasks.
+Users should inherit from this class and implement the execute method.
+
+
+## `TaskResult`
+
+```python
+TaskResult(task_id: str, result: Any, execution_time: float = 0.0, worker_rank: int = -1)
+```
+
+Container for task execution results
