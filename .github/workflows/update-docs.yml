@@ -122,7 +122,7 @@ jobs:
                   if not modname.startswith('_') and ispkg:  # Only include packages (with __init__.py)
                       try:
                           submodule = importlib.import_module(f'mpitools.{modname}')
-                          all_docs.append(f'\n---\n\n# {modname.title()} Module\n\n')
+                          all_docs.append(f'\n---\n\n# {modname.title()} Submodule\n\n')
                           sub_docs = document_module(submodule, f'mpitools.{modname}')
                           all_docs.extend(sub_docs)
                       except ImportError as e:
@@ -134,9 +134,9 @@ jobs:
           
       - name: Update README with custom docs
         run: |
-          sed -i '/^## API Reference/,$d' README.md
+          sed -i '/^# API Reference/,$d' README.md
           echo "" >> README.md
-          echo "## API Reference" >> README.md
+          echo "# API Reference" >> README.md
           echo "" >> README.md
           cat temp_docs.md >> README.md
           rm temp_docs.md
