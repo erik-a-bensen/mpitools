@@ -365,18 +365,14 @@ All processes receive the same reduced result.
 
 ## `Task` (class)
 
-
-Abstract base class for tasks.
-Users should inherit from this class and implement the execute method.
-
-
-### Constructor
-
 ```python
 Task(task_id: str, kwargs)
 ```
 
-*No description available.*
+
+Abstract base class for tasks.
+Users should inherit from this class and implement the execute method.
+
 
 ### Methods
 
@@ -393,30 +389,22 @@ This method must be implemented by subclasses.
 
 ## `TaskResult` (class)
 
-Container for task execution results
-
-### Constructor
-
 ```python
 TaskResult(task_id: str, result: Any, execution_time: float = 0.0, worker_rank: int = -1)
 ```
 
-*No description available.*
+Container for task execution results
 
 ## `MPIQueue` (class)
-
-
-Interface for the MPI queue system.
-Automatically determines whether to run as manager or worker based on rank.
-
-
-### Constructor
 
 ```python
 MPIQueue(comm: MPI.Comm = MPI.COMM_WORLD)
 ```
 
-*No description available.*
+
+Interface for the MPI queue system.
+Automatically determines whether to run as manager or worker based on rank.
+
 
 ### Methods
 
