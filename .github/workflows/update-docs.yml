@@ -166,6 +166,9 @@ jobs:
           
           all_docs = []
           
+          # Add header to the API docs
+          all_docs.append('# API Reference\n')
+          
           # Document main module
           main_docs = document_module(mpitools, 'mpitools')
           all_docs.extend(main_docs)
@@ -183,23 +186,14 @@ jobs:
                       except ImportError as e:
                           print(f'Could not import mpitools.{modname}: {e}')
           
-          with open('temp_docs.md', 'w') as f:
+          with open('API_DOCS.md', 'w') as f:
               f.write('\n'.join(all_docs))
           "
-          
-      - name: Update README with custom docs
-        run: |
-          sed -i '/^# API Reference/,$d' README.md
-          echo "" >> README.md
-          echo "# API Reference" >> README.md
-          echo "" >> README.md
-          cat temp_docs.md >> README.md
-          rm temp_docs.md
           
       - name: Commit changes
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
-          git add README.md
-          git diff --staged --quiet || git commit -m "Auto-update README with API docs [skip ci]"
+          git add API_DOCS.md
+          git diff --staged --quiet || git commit -m "Auto-update API documentation [skip ci]"
           git push
