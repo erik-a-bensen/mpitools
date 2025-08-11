@@ -17,9 +17,7 @@ A Python package providing simple decorators and utilities for MPI (Message Pass
 ## Installation
 
 ```bash
-git clone git@github.com:erik-a-bensen/mpitools.git
-cd mpitools
-pip install .
+pip install mpi4pytools
 ```
 
 **Requirements:**
