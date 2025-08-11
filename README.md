@@ -1,7 +1,9 @@
 # mpitools
 
-![Development Status](https://img.shields.io/badge/status-alpha-orange)
-![Version](https://img.shields.io/badge/version-0.1.0-blue)
+![PyPI Version](https://img.shields.io/pypi/v/mpi4pytools)
+![Development Status](https://img.shields.io/pypi/status/mpi4pytools)
+![Python Versions](https://img.shields.io/pypi/pyversions/mpi4pytools)
+![License](https://img.shields.io/pypi/l/mpi4pytools)
 
 > **⚠️ Development Notice**: This package is in active development. The API may change significantly between versions until v1.0.0. Use in production environments is not recommended.
 
