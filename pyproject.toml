@@ -1,23 +1,21 @@
 [build-system]
-requires = ["setuptools", "wheel"]
+requires = ["setuptools>=61.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
 name = "mpitools"
 version = "0.1.0"
 description = "Simple decorators and utilities for MPI parallel computing"
-long_description = {file = "README.md"}
-long_description_content_type = "text/markdown"
-requires-python = ">=3.8"  
+readme = "README.md"
+requires-python = ">=3.8"
 dependencies = [
     "mpi4py",
 ]
-
 authors = [
     {name = "Erik A. Bensen", email = "erik-a-bensen@users.noreply.github.com"}
 ]
 license = {text = "MIT"}
-keywords = ["mpi", "mpi4py", "parallel", "computing", "decorators", "hpc"]
+keywords = ["mpi", "parallel", "computing", "decorators", "hpc"]
 classifiers = [
     "Development Status :: 3 - Alpha",
     "Intended Audience :: Developers",
