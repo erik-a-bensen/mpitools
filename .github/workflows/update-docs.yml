@@ -49,9 +49,9 @@ jobs:
               lines = cleaned.split('\n')
               result = []
               
-              for line in lines:
+              for i, line in enumerate(lines):
                   if line.strip() == '':
-                      # Preserve blank lines
+                      # Preserve blank lines as paragraph breaks
                       result.append('')
                   else:
                       # Convert leading spaces to non-breaking spaces to preserve indentation
@@ -61,11 +61,17 @@ jobs:
                       if leading_spaces > 0:
                           # Convert spaces to &nbsp; to preserve indentation in markdown
                           indent = '&nbsp;' * (leading_spaces * 2)  # Use 2 &nbsp; per space for better visibility
-                          result.append(f'{indent}{stripped}')
+                          line_content = f'{indent}{stripped}'
                       else:
-                          result.append(stripped)
+                          line_content = stripped
+                      
+                      # Add line break for non-empty lines (except the last line)
+                      if i < len(lines) - 1 and lines[i + 1].strip() != '':
+                          line_content += '<br>'
+                      
+                      result.append(line_content)
               
-              return '\n'.join(result)  # Fixed: removed the escape
+              return '\n'.join(result)
           
           def clean_signature(func):
               try:
