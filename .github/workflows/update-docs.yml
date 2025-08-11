@@ -65,7 +65,7 @@ jobs:
                       else:
                           result.append(stripped)
               
-              return '\\n'.join(result)
+              return '\n'.join(result)  # Fixed: removed the escape
           
           def clean_signature(func):
               try:
