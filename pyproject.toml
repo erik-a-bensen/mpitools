@@ -3,7 +3,7 @@ requires = ["setuptools>=61.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "mpitools"
+name = "mpi-tools"
 version = "0.1.0"
 description = "Simple decorators and utilities for MPI parallel computing"
 readme = "README.md"
