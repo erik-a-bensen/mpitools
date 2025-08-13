@@ -11,7 +11,7 @@ from .collective import (
 from .reduction import (
     reduce_to_main,
     reduce_to_process,
-    reduce_to_all
+    reduce_to_all 
 )
 from .buffered_collective import (
     buffered_broadcast_from_main,

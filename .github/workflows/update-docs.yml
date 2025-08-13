@@ -334,7 +334,7 @@ jobs:
                           submodule = importlib.import_module(f'mpitools.{modname}')
                           all_docs.append('---')
                           all_docs.append('')
-                          all_docs.append(f'# {modname.title()} Submodule')
+                          all_docs.append(f'# {modname.title()} Module')
                           all_docs.append('')
                           sub_docs = document_module(submodule, f'mpitools.{modname}')
                           all_docs.extend(sub_docs)
