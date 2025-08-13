@@ -12,7 +12,7 @@ A Python package providing simple decorators and utilities for MPI (Message Pass
 
 ## Features
 
-- **Decorators for work distribution**: Execute functions on specific ranks or groups of processes
+- **Work distribution decorators**: Execute functions on specific ranks or groups of processes
 - **Communication decorators**: Collective communications and reduce operations made simple
 - **Error handling**: Graceful error handling across all MPI processes
 - **Task queue system**: Distributed task processing with the queue submodule

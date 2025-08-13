@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "mpi4pytools"
-version = "0.1.1"
+version = "0.2.0"
 description = "Simple decorators and utilities for MPI parallel computing"
 readme = "README.md"
 requires-python = ">=3.8"
