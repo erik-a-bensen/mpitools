@@ -222,7 +222,7 @@ def all_to_all(comm: Comm = COMM_WORLD) -> Callable:
     comm : MPI.Comm, optional
         MPI communicator. Defaults to COMM_WORLD.
     
-    Returns
+    Returns 
     -------
     Callable
         Decorator function.
