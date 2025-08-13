@@ -116,19 +116,27 @@ def risky_computation():
 - `@eval_on_single(rank)` - Execute only on specified rank
 - `@eval_on_select([ranks])` - Execute only on specified ranks
 
-### Communication
-- `@broadcast_from_main()` - Execute on rank 0, broadcast result to all
-- `@broadcast_from_process(rank)` - Execute on specified rank, broadcast to all
-- `@gather_to_main()` - Execute on all, gather results to rank 0
-- `@gather_to_process(rank)` - Execute on all, gather results to specified rank
-- `@gather_to_all()` - Execute on all, gather results to all processes
+### Collective Communication
+- `@broadcast_from_main()` - Execute on rank 0, broadcast result to all processes
+- `@broadcast_from_process(rank)` - Execute on specified rank, broadcast to all processes
+- `@scatter_from_main()` - Execute on rank 0, scatter data to all processes
+- `@scatter_from_process(rank)` - Execute on specified rank, scatter data to all processes
+- `@gather_to_main()` - Execute on all processes, gather results to rank 0
+- `@gather_to_process(rank)` - Execute on all processes, gather results to specified rank
+- `@gather_to_all()` - Execute on all processes, gather results to all processes
+- `@all_to_all()` - Execute on all processes, exchange data between all processes
 
 ### Reduction Operations
-- `@reduce_to_main(op='sum')` - Execute on all, reduce to rank 0
-- `@reduce_to_process(rank, op='sum')` - Execute on all, reduce to specified rank
-- `@reduce_to_all(op='sum')` - Execute on all, reduce to all processes
+- `@reduce_to_main(op='sum')` - Execute on all processes, reduce to rank 0
+- `@reduce_to_process(rank, op='sum')` - Execute on all processes, reduce to specified rank
+- `@reduce_to_all(op='sum')` - Execute on all processes, reduce to all processes
 
 Supported reduction operations: `'sum'`, `'prod'`, `'max'`, `'min'`, `'land'`, `'band'`, `'lor'`, `'bor'`, `'lxor'`, `'bxor'`, `'maxloc'`, `'minloc'`
+
+### Decorator Variants
+- `@buffered_*` - Buffered versions of collective communication and reduction operations for improved performance. 
+- `@variable_*` - Variable-sized versions of buffered scatter, gather and all_to_all communications for handling dynamic data sizes.
+- Currently, only numpy arrays are supported.
 
 ## Running MPI Programs
 
