@@ -1,24 +1,9 @@
-from mpi4py import MPI
 from mpi4py.MPI import Comm, COMM_WORLD, Op
 from collections.abc import Callable
 from functools import wraps
+from mpitools.comms.utils import reduce_ops
 
 # Reduce decorators
-_reduce_ops = {
-    'sum': MPI.SUM,
-    'prod': MPI.PROD,
-    'max': MPI.MAX,
-    'min': MPI.MIN,
-    'land': MPI.LAND,
-    'band': MPI.BAND,
-    'lor': MPI.LOR,
-    'bor': MPI.BOR,
-    'lxor': MPI.LXOR,
-    'bxor': MPI.BXOR,
-    'maxloc': MPI.MAXLOC,
-    'minloc': MPI.MINLOC
-}
-
 def reduce_to_main(op: str | Op = 'sum', comm: Comm = COMM_WORLD) -> Callable:
     """
     Decorator that executes function on all processes and reduces results to rank 0.
@@ -43,9 +28,9 @@ def reduce_to_main(op: str | Op = 'sum', comm: Comm = COMM_WORLD) -> Callable:
     Rank 0 receives the reduced result, other ranks receive None.
     """
     if isinstance(op, str):
-        if op not in _reduce_ops:
-            raise ValueError(f"Invalid reduction operation: {op}. Supported operations: {list(_reduce_ops.keys())}")
-        op = _reduce_ops[op.lower()]
+        if op not in reduce_ops:
+            raise ValueError(f"Invalid reduction operation: {op}. Supported operations: {list(reduce_ops.keys())}")
+        op = reduce_ops[op.lower()]
 
     def decorator(func: Callable) -> Callable:
         @wraps(func)
@@ -81,9 +66,9 @@ def reduce_to_process(process_rank: int, op: str | Op = 'sum', comm: Comm = COMM
     The specified rank receives the reduced result, other ranks receive None.
     """
     if isinstance(op, str):
-        if op not in _reduce_ops:
-            raise ValueError(f"Invalid reduction operation: {op}. Supported operations: {list(_reduce_ops.keys())}")
-        op = _reduce_ops[op.lower()]
+        if op not in reduce_ops:
+            raise ValueError(f"Invalid reduction operation: {op}. Supported operations: {list(reduce_ops.keys())}")
+        op = reduce_ops[op.lower()]
 
     def decorator(func: Callable) -> Callable:
         @wraps(func)
@@ -117,9 +102,9 @@ def reduce_to_all(op: str | Op = 'sum', comm: Comm = COMM_WORLD) -> Callable:
     All processes receive the same reduced result.
     """
     if isinstance(op, str):
-        if op not in _reduce_ops:
-            raise ValueError(f"Invalid reduction operation: {op}. Supported operations: {list(_reduce_ops.keys())}")
-        op = _reduce_ops[op.lower()]
+        if op not in reduce_ops:
+            raise ValueError(f"Invalid reduction operation: {op}. Supported operations: {list(reduce_ops.keys())}")
+        op = reduce_ops[op.lower()]
 
     def decorator(func: Callable) -> Callable:
         @wraps(func)
