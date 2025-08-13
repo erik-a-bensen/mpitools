@@ -131,6 +131,768 @@ Function runs only on ranks in process_ranks, returns None on all other ranks.
 
 ---
 
+# Comms Module
+
+## `broadcast_from_main`
+
+```python
+broadcast_from_main(comm: MPI.Comm = MPI.COMM_WORLD) -> Callable
+```
+
+Decorator that executes function on rank 0 and broadcasts result to all processes.
+
+Parameters<br>
+----------<br>
+comm : MPI.Comm, optional<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;MPI communicator. Defaults to COMM_WORLD.
+
+Returns<br>
+-------<br>
+Callable<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Decorator function.
+
+Notes<br>
+-----<br>
+Function runs only on rank 0, result is broadcast to all ranks using comm.bcast().<br>
+All processes receive the same return value.
+
+## `broadcast_from_process`
+
+```python
+broadcast_from_process(process_rank: int, comm: MPI.Comm = MPI.COMM_WORLD) -> Callable
+```
+
+Decorator that executes function on specified rank and broadcasts result to all processes.
+
+Parameters<br>
+----------<br>
+process_rank : int<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Rank of the process that should execute the function and broadcast result.<br>
+comm : MPI.Comm, optional<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;MPI communicator. Defaults to COMM_WORLD.
+
+Returns<br>
+-------<br>
+Callable<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Decorator function.
+
+Notes<br>
+-----<br>
+Function runs only on the specified rank, result is broadcast to all ranks.<br>
+All processes receive the same return value.
+
+## `scatter_from_main`
+
+```python
+scatter_from_main(comm: MPI.Comm = MPI.COMM_WORLD) -> Callable
+```
+
+Decorator that executes function on rank 0 and scatters results to all processes.
+
+Parameters<br>
+----------<br>
+comm : MPI.Comm, optional<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;MPI communicator. Defaults to COMM_WORLD.
+
+Returns<br>
+-------<br>
+Callable<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Decorator function.
+
+Notes<br>
+-----<br>
+Function runs only on rank 0, results are scattered to all ranks using comm.scatter().<br>
+Each process receives a portion of the result.
+
+## `scatter_from_process`
+
+```python
+scatter_from_process(process_rank: int, comm: MPI.Comm = MPI.COMM_WORLD) -> Callable
+```
+
+Decorator that executes function on specified rank and scatters results to all processes.
+
+Parameters<br>
+----------<br>
+process_rank : int<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Rank of the process that should execute the function and scatter results.<br>
+comm : MPI.Comm, optional<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;MPI communicator. Defaults to COMM_WORLD.
+
+Returns<br>
+-------<br>
+Callable<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Decorator function.
+
+Notes<br>
+-----<br>
+Function runs only on the specified rank, results are scattered to all ranks.<br>
+Each process receives a portion of the result.
+
+## `gather_to_main`
+
+```python
+gather_to_main(comm: MPI.Comm = MPI.COMM_WORLD) -> Callable
+```
+
+Decorator that executes function on all processes and gathers results to rank 0.
+
+Parameters<br>
+----------<br>
+comm : MPI.Comm, optional<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;MPI communicator. Defaults to COMM_WORLD.
+
+Returns<br>
+-------<br>
+Callable<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Decorator function.
+
+Notes<br>
+-----<br>
+Function runs on all processes, results are gathered to rank 0 using comm.gather().<br>
+Rank 0 receives a list of all results, other ranks receive None.
+
+## `gather_to_process`
+
+```python
+gather_to_process(process_rank: int, comm: MPI.Comm = MPI.COMM_WORLD) -> Callable
+```
+
+Decorator that executes function on all processes and gathers results to specified rank.
+
+Parameters<br>
+----------<br>
+process_rank : int<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Rank of the process that should receive gathered results.<br>
+comm : MPI.Comm, optional<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;MPI communicator. Defaults to COMM_WORLD.
+
+Returns<br>
+-------<br>
+Callable<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Decorator function.
+
+Notes<br>
+-----<br>
+Function runs on all processes, results are gathered to specified rank.<br>
+The specified rank receives a list of all results, other ranks receive None.
+
+## `gather_to_all`
+
+```python
+gather_to_all(comm: MPI.Comm = MPI.COMM_WORLD) -> Callable
+```
+
+Decorator that executes function on all processes and gathers results to all processes.
+
+Parameters<br>
+----------<br>
+comm : MPI.Comm, optional<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;MPI communicator. Defaults to COMM_WORLD.
+
+Returns<br>
+-------<br>
+Callable<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Decorator function.
+
+Notes<br>
+-----<br>
+Function runs on all processes, results are gathered to all ranks using comm.allgather().<br>
+All processes receive a list of all results.
+
+## `all_to_all`
+
+```python
+all_to_all(comm: MPI.Comm = MPI.COMM_WORLD) -> Callable
+```
+
+Decorator that executes function on all processes and exchanges results between all processes.
+
+Parameters<br>
+----------<br>
+comm : MPI.Comm, optional<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;MPI communicator. Defaults to COMM_WORLD.
+
+Returns <br>
+-------<br>
+Callable<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Decorator function.
+
+Notes<br>
+-----<br>
+Function runs on all processes, results are exchanged between all ranks using comm.alltoall().<br>
+Each process receives a list of results from all other processes.
+
+## `reduce_to_main`
+
+```python
+reduce_to_main(op: str | MPI.Op = 'sum', comm: MPI.Comm = MPI.COMM_WORLD) -> Callable
+```
+
+Decorator that executes function on all processes and reduces results to rank 0.
+
+Parameters<br>
+----------<br>
+op : str or MPI.Op, optional<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Reduction operation to apply. Defaults to 'sum'.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;String options: 'sum', 'prod', 'max', 'min', 'land', 'band', 'lor', 'bor', <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'lxor', 'bxor', 'maxloc', 'minloc'.<br>
+comm : MPI.Comm, optional<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;MPI communicator. Defaults to COMM_WORLD.
+
+Returns<br>
+-------<br>
+Callable<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Decorator function.
+
+Notes<br>
+-----<br>
+Function runs on all processes, results are reduced to rank 0 using comm.reduce().<br>
+Rank 0 receives the reduced result, other ranks receive None.
+
+## `reduce_to_process`
+
+```python
+reduce_to_process(process_rank: int, op: str | MPI.Op = 'sum', comm: MPI.Comm = MPI.COMM_WORLD) -> Callable
+```
+
+Decorator that executes function on all processes and reduces results to specified rank.
+
+Parameters<br>
+----------<br>
+process_rank : int<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Rank of the process that should receive the reduced result.<br>
+op : str or MPI.Op, optional<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Reduction operation to apply. Defaults to 'sum'.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;String options: 'sum', 'prod', 'max', 'min', 'land', 'band', 'lor', 'bor', <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'lxor', 'bxor', 'maxloc', 'minloc'.<br>
+comm : MPI.Comm, optional<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;MPI communicator. Defaults to COMM_WORLD.
+
+Returns<br>
+-------<br>
+Callable<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Decorator function.
+
+Notes<br>
+-----<br>
+Function runs on all processes, results are reduced to specified rank using comm.reduce().<br>
+The specified rank receives the reduced result, other ranks receive None.
+
+## `reduce_to_all`
+
+```python
+reduce_to_all(op: str | MPI.Op = 'sum', comm: MPI.Comm = MPI.COMM_WORLD) -> Callable
+```
+
+Decorator that executes function on all processes and reduces results to all processes.
+
+Parameters<br>
+----------<br>
+op : str or MPI.Op, optional<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Reduction operation to apply. Defaults to 'sum'.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;String options: 'sum', 'prod', 'max', 'min', 'land', 'band', 'lor', 'bor', <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'lxor', 'bxor', 'maxloc', 'minloc'.<br>
+comm : MPI.Comm, optional<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;MPI communicator. Defaults to COMM_WORLD.
+
+Returns<br>
+-------<br>
+Callable<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Decorator function.
+
+Notes<br>
+-----<br>
+Function runs on all processes, results are reduced to all ranks using comm.allreduce().<br>
+All processes receive the same reduced result.
+
+## `buffered_broadcast_from_main`
+
+```python
+buffered_broadcast_from_main(shape: Union[int, Tuple[int, ...]], dtype: numpy.dtype, comm: MPI.Comm = MPI.COMM_WORLD) -> Callable
+```
+
+Decorator that executes function on rank 0 and broadcasts result to all processes.
+
+Parameters<br>
+----------<br>
+shape : int or tuple of ints<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Shape of the data buffer to broadcast.<br>
+dtype : numpy.dtype<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Data type of the buffer.<br>
+comm : MPI.Comm, optional<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;MPI communicator. Defaults to COMM_WORLD.
+
+Returns<br>
+-------<br>
+Callable<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Decorator function.
+
+Notes<br>
+-----<br>
+Function runs only on rank 0, result is broadcast to all ranks using comm.Bcast().<br>
+All processes receive the same return value.
+
+## `buffered_broadcast_from_process`
+
+```python
+buffered_broadcast_from_process(process_rank: int, shape: Union[int, Tuple[int, ...]], dtype: numpy.dtype, comm: MPI.Comm = MPI.COMM_WORLD) -> Callable
+```
+
+Decorator that executes function on specified rank and broadcasts result to all processes.
+
+Parameters<br>
+----------<br>
+process_rank : int<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Rank of the process that should execute the function and broadcast result.<br>
+shape : int or tuple of ints<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Shape of the data buffer to broadcast.<br>
+dtype : numpy.dtype<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Data type of the buffer.<br>
+comm : MPI.Comm, optional<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;MPI communicator. Defaults to COMM_WORLD.
+
+Returns<br>
+-------<br>
+Callable<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Decorator function.
+
+Notes<br>
+-----<br>
+Function runs only on the specified rank, result is broadcast to all ranks.<br>
+All processes receive the same return value.
+
+## `buffered_scatter_from_main`
+
+```python
+buffered_scatter_from_main(chunk_shape: Union[int, Tuple[int, ...]], dtype: numpy.dtype, comm: MPI.Comm = MPI.COMM_WORLD) -> Callable
+```
+
+Decorator that executes function on rank 0 and scatters results to all processes.
+
+Parameters<br>
+----------<br>
+chunk_shape : int or tuple of ints<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Shape of each chunk to be scattered to each process.<br>
+dtype : numpy.dtype<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Data type of the buffer.<br>
+comm : MPI.Comm, optional<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;MPI communicator. Defaults to COMM_WORLD.
+
+Returns<br>
+-------<br>
+Callable<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Decorator function.
+
+Notes<br>
+-----<br>
+Function runs only on rank 0, results are scattered to all ranks using comm.scatter().<br>
+Each process receives a portion of the result.
+
+## `buffered_scatter_from_process`
+
+```python
+buffered_scatter_from_process(process_rank: int, chunk_shape: Union[int, Tuple[int, ...]], dtype: numpy.dtype, comm: MPI.Comm = MPI.COMM_WORLD) -> Callable
+```
+
+Decorator that executes function on specified rank and scatters results to all processes.
+
+Parameters<br>
+----------<br>
+process_rank : int<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Rank of the process that should execute the function and scatter results.<br>
+chunk_shape : int or tuple of ints<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Shape of each chunk to be scattered to each process.<br>
+dtype : numpy.dtype<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Data type of the buffer.<br>
+comm : MPI.Comm, optional<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;MPI communicator. Defaults to COMM_WORLD.
+
+Returns<br>
+-------<br>
+Callable<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Decorator function.
+
+Notes<br>
+-----<br>
+Function runs only on the specified rank, results are scattered to all ranks.<br>
+Each process receives a portion of the result.
+
+## `buffered_gather_to_main`
+
+```python
+buffered_gather_to_main(shape: Union[int, Tuple[int, ...]], dtype: numpy.dtype, comm: MPI.Comm = MPI.COMM_WORLD) -> Callable
+```
+
+Decorator that executes function on all processes and gathers results to rank 0.
+
+Parameters<br>
+----------<br>
+shape : int or tuple of ints<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Shape of data from each process.<br>
+dtype : numpy.dtype<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Data type of the buffer.<br>
+comm : MPI.Comm, optional<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;MPI communicator. Defaults to COMM_WORLD.
+
+Returns<br>
+-------<br>
+Callable<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Decorator function.
+
+Notes<br>
+-----<br>
+Function runs on all processes, results are gathered to rank 0 using comm.gather().<br>
+Rank 0 receives a list of all results, other ranks receive None.
+
+## `buffered_gather_to_process`
+
+```python
+buffered_gather_to_process(process_rank: int, shape: Union[int, Tuple[int, ...]], dtype: numpy.dtype, comm: MPI.Comm = MPI.COMM_WORLD) -> Callable
+```
+
+Decorator that executes function on all processes and gathers results to specified rank.
+
+Parameters<br>
+----------<br>
+process_rank : int<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Rank of the process that should receive gathered results.<br>
+shape : int or tuple of ints<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Shape of data from each process.<br>
+dtype : numpy.dtype<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Data type of the buffer.<br>
+comm : MPI.Comm, optional<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;MPI communicator. Defaults to COMM_WORLD.
+
+Returns<br>
+-------<br>
+Callable<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Decorator function.
+
+Notes<br>
+-----<br>
+Function runs on all processes, results are gathered to specified rank.<br>
+The specified rank receives a list of all results, other ranks receive None.
+
+## `buffered_gather_to_all`
+
+```python
+buffered_gather_to_all(shape: Union[int, Tuple[int, ...]], dtype: numpy.dtype, comm: MPI.Comm = MPI.COMM_WORLD) -> Callable
+```
+
+Decorator that executes function on all processes and gathers results to all processes.
+
+Parameters<br>
+----------<br>
+shape : int or tuple of ints<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Shape of data from each process.<br>
+dtype : numpy.dtype<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Data type of the buffer.<br>
+comm : MPI.Comm, optional<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;MPI communicator. Defaults to COMM_WORLD.
+
+Returns<br>
+-------<br>
+Callable<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Decorator function.
+
+Notes<br>
+-----<br>
+Function runs on all processes, results are gathered to all ranks using comm.allgather().<br>
+All processes receive a list of all results.
+
+## `buffered_all_to_all`
+
+```python
+buffered_all_to_all(element_shape: Union[int, Tuple[int, ...]], dtype: numpy.dtype, comm: MPI.Comm = MPI.COMM_WORLD) -> Callable
+```
+
+Decorator that executes function on all processes and exchanges results between all processes.
+
+Parameters<br>
+----------<br>
+element_shape : int or tuple of ints<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Shape of data element being sent to each process.<br>
+dtype : numpy.dtype<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Data type of the buffer.<br>
+comm : MPI.Comm, optional<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;MPI communicator. Defaults to COMM_WORLD.
+
+Returns<br>
+-------<br>
+Callable<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Decorator function.
+
+Notes<br>
+-----<br>
+Function runs on all processes, results are exchanged between all ranks using comm.alltoall().<br>
+Each process receives a list of results from all other processes.
+
+## `buffered_reduce_to_main`
+
+```python
+buffered_reduce_to_main(shape: Union[int, Tuple[int, ...]], dtype: numpy.dtype, op: str | MPI.Op = 'sum', comm: MPI.Comm = MPI.COMM_WORLD) -> Callable
+```
+
+Decorator that executes function on all processes and reduces results to rank 0.
+
+Parameters<br>
+----------<br>
+shape : int or tuple of ints<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Shape of the data buffer for reduction.<br>
+dtype : numpy.dtype<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Data type of the buffer.<br>
+op : str or MPI.Op, optional<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Reduction operation to apply. Defaults to 'sum'.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;String options: 'sum', 'prod', 'max', 'min', 'land', 'band', 'lor', 'bor', <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'lxor', 'bxor', 'maxloc', 'minloc'.<br>
+comm : MPI.Comm, optional<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;MPI communicator. Defaults to COMM_WORLD.
+
+Returns<br>
+-------<br>
+Callable<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Decorator function.
+
+Notes<br>
+-----<br>
+Function runs on all processes, results are reduced to rank 0 using comm.Reduce().<br>
+Rank 0 receives the reduced result, other ranks receive None.
+
+## `buffered_reduce_to_process`
+
+```python
+buffered_reduce_to_process(process_rank: int, shape: Union[int, Tuple[int, ...]], dtype: numpy.dtype, op: str | MPI.Op = 'sum', comm: MPI.Comm = MPI.COMM_WORLD) -> Callable
+```
+
+Decorator that executes function on all processes and reduces results to specified rank.
+
+Parameters<br>
+----------<br>
+process_rank : int<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Rank of the process that should receive the reduced result.<br>
+shape : int or tuple of ints<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Shape of the data buffer for reduction.<br>
+dtype : numpy.dtype<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Data type of the buffer.<br>
+op : str or MPI.Op, optional<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Reduction operation to apply. Defaults to 'sum'.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;String options: 'sum', 'prod', 'max', 'min', 'land', 'band', 'lor', 'bor', <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'lxor', 'bxor', 'maxloc', 'minloc'.<br>
+comm : MPI.Comm, optional<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;MPI communicator. Defaults to COMM_WORLD.
+
+Returns<br>
+-------<br>
+Callable<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Decorator function.
+
+Notes<br>
+-----<br>
+Function runs on all processes, results are reduced to specified rank using comm.Reduce().<br>
+The specified rank receives the reduced result, other ranks receive None.
+
+## `buffered_reduce_to_all`
+
+```python
+buffered_reduce_to_all(shape: Union[int, Tuple[int, ...]], dtype: numpy.dtype, op: str | MPI.Op = 'sum', comm: MPI.Comm = MPI.COMM_WORLD) -> Callable
+```
+
+Decorator that executes function on all processes and reduces results to all processes.
+
+Parameters<br>
+----------<br>
+shape : int or tuple of ints<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Shape of the data buffer for reduction.<br>
+dtype : numpy.dtype<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Data type of the buffer.<br>
+op : str or MPI.Op, optional<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Reduction operation to apply. Defaults to 'sum'.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;String options: 'sum', 'prod', 'max', 'min', 'land', 'band', 'lor', 'bor', <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'lxor', 'bxor', 'maxloc', 'minloc'.<br>
+comm : MPI.Comm, optional<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;MPI communicator. Defaults to COMM_WORLD.
+
+Returns<br>
+-------<br>
+Callable<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Decorator function.
+
+Notes<br>
+-----<br>
+Function runs on all processes, results are reduced to all ranks using comm.Allreduce().<br>
+All processes receive the same reduced result.
+
+## `variable_scatter_from_main`
+
+```python
+variable_scatter_from_main(counts: Sequence[int], dtype: numpy.dtype, comm: MPI.Comm = MPI.COMM_WORLD) -> Callable
+```
+
+Decorator that executes function on rank 0 and scatters variable-sized results to all processes.
+
+Parameters<br>
+----------<br>
+counts : sequence of ints<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Number of elements to send to each process.<br>
+dtype : numpy.dtype<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Data type of the buffer.<br>
+comm : MPI.Comm, optional<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;MPI communicator. Defaults to COMM_WORLD.
+
+Returns<br>
+-------<br>
+Callable<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Decorator function.
+
+Notes<br>
+-----<br>
+Function runs only on rank 0, results are scattered to all ranks using comm.Scatterv().<br>
+Each process receives a portion of the result based on counts array.
+
+## `variable_scatter_from_process`
+
+```python
+variable_scatter_from_process(process_rank: int, counts: Sequence[int], dtype: numpy.dtype, comm: MPI.Comm = MPI.COMM_WORLD) -> Callable
+```
+
+Decorator that executes function on specified rank and scatters variable-sized results to all processes.
+
+Parameters<br>
+----------<br>
+process_rank : int<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Rank of the process that should execute the function and scatter results.<br>
+counts : sequence of ints<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Number of elements to send to each process.<br>
+dtype : numpy.dtype<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Data type of the buffer.<br>
+comm : MPI.Comm, optional<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;MPI communicator. Defaults to COMM_WORLD.
+
+Returns<br>
+-------<br>
+Callable<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Decorator function.
+
+Notes<br>
+-----<br>
+Function runs only on the specified rank, results are scattered to all ranks.<br>
+Each process receives a portion of the result based on counts array.
+
+## `variable_gather_to_main`
+
+```python
+variable_gather_to_main(counts: Sequence[int], dtype: numpy.dtype, comm: MPI.Comm = MPI.COMM_WORLD) -> Callable
+```
+
+Decorator that executes function on all processes and gathers variable-sized results to rank 0.
+
+Parameters<br>
+----------<br>
+counts : sequence of ints<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Number of elements to receive from each process.<br>
+dtype : numpy.dtype<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Data type of the buffer.<br>
+comm : MPI.Comm, optional<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;MPI communicator. Defaults to COMM_WORLD.
+
+Returns<br>
+-------<br>
+Callable<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Decorator function.
+
+Notes<br>
+-----<br>
+Function runs on all processes, results are gathered to rank 0 using comm.Gatherv().<br>
+Rank 0 receives concatenated results, other ranks receive None.
+
+## `variable_gather_to_process`
+
+```python
+variable_gather_to_process(process_rank: int, counts: Sequence[int], dtype: numpy.dtype, comm: MPI.Comm = MPI.COMM_WORLD) -> Callable
+```
+
+Decorator that executes function on all processes and gathers variable-sized results to specified rank.
+
+Parameters<br>
+----------<br>
+process_rank : int<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Rank of the process that should receive gathered results.<br>
+counts : sequence of ints<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Number of elements to receive from each process.<br>
+dtype : numpy.dtype<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Data type of the buffer.<br>
+comm : MPI.Comm, optional<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;MPI communicator. Defaults to COMM_WORLD.
+
+Returns<br>
+-------<br>
+Callable<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Decorator function.
+
+Notes<br>
+-----<br>
+Function runs on all processes, results are gathered to specified rank.<br>
+The specified rank receives concatenated results, other ranks receive None.
+
+## `variable_gather_to_all`
+
+```python
+variable_gather_to_all(counts: Sequence[int], dtype: numpy.dtype, comm: MPI.Comm = MPI.COMM_WORLD) -> Callable
+```
+
+Decorator that executes function on all processes and gathers variable-sized results to all processes.
+
+Parameters<br>
+----------<br>
+counts : sequence of ints<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Number of elements to receive from each process.<br>
+dtype : numpy.dtype<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Data type of the buffer.<br>
+comm : MPI.Comm, optional<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;MPI communicator. Defaults to COMM_WORLD.
+
+Returns<br>
+-------<br>
+Callable<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Decorator function.
+
+Notes<br>
+-----<br>
+Function runs on all processes, results are gathered to all ranks using comm.Allgatherv().<br>
+All processes receive concatenated results.
+
+## `variable_all_to_all`
+
+```python
+variable_all_to_all(send_counts: Sequence[int], recv_counts: Sequence[int], dtype: numpy.dtype, comm: MPI.Comm = MPI.COMM_WORLD) -> Callable
+```
+
+Decorator that executes function on all processes and exchanges variable-sized results between all processes.
+
+Parameters<br>
+----------<br>
+send_counts : sequence of ints<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Number of elements to send to each process.<br>
+recv_counts : sequence of ints<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Number of elements to receive from each process.<br>
+dtype : numpy.dtype<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Data type of the buffer.<br>
+comm : MPI.Comm, optional<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;MPI communicator. Defaults to COMM_WORLD.
+
+Returns<br>
+-------<br>
+Callable<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Decorator function.
+
+Notes<br>
+-----<br>
+Function runs on all processes, results are exchanged between all ranks using comm.Alltoallv().<br>
+Each process receives variable-sized data from all other processes.
+
+---
+
 # Queue Module
 
 ## `Task` (class)
