@@ -129,6 +129,10 @@ Notes<br>
 -----<br>
 Function runs only on ranks in process_ranks, returns None on all other ranks.
 
+---
+
+# Comms Submodule
+
 ## `broadcast_from_main`
 
 ```python
@@ -176,6 +180,54 @@ Notes<br>
 -----<br>
 Function runs only on the specified rank, result is broadcast to all ranks.<br>
 All processes receive the same return value.
+
+## `scatter_from_main`
+
+```python
+scatter_from_main(comm: MPI.Comm = MPI.COMM_WORLD) -> Callable
+```
+
+Decorator that executes function on rank 0 and scatters results to all processes.
+
+Parameters<br>
+----------<br>
+comm : MPI.Comm, optional<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;MPI communicator. Defaults to COMM_WORLD.
+
+Returns<br>
+-------<br>
+Callable<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Decorator function.
+
+Notes<br>
+-----<br>
+Function runs only on rank 0, results are scattered to all ranks using comm.scatter().<br>
+Each process receives a portion of the result.
+
+## `scatter_from_process`
+
+```python
+scatter_from_process(process_rank: int, comm: MPI.Comm = MPI.COMM_WORLD) -> Callable
+```
+
+Decorator that executes function on specified rank and scatters results to all processes.
+
+Parameters<br>
+----------<br>
+process_rank : int<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Rank of the process that should execute the function and scatter results.<br>
+comm : MPI.Comm, optional<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;MPI communicator. Defaults to COMM_WORLD.
+
+Returns<br>
+-------<br>
+Callable<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Decorator function.
+
+Notes<br>
+-----<br>
+Function runs only on the specified rank, results are scattered to all ranks.<br>
+Each process receives a portion of the result.
 
 ## `gather_to_main`
 
@@ -247,6 +299,29 @@ Notes<br>
 -----<br>
 Function runs on all processes, results are gathered to all ranks using comm.allgather().<br>
 All processes receive a list of all results.
+
+## `all_to_all`
+
+```python
+all_to_all(comm: MPI.Comm = MPI.COMM_WORLD) -> Callable
+```
+
+Decorator that executes function on all processes and exchanges results between all processes.
+
+Parameters<br>
+----------<br>
+comm : MPI.Comm, optional<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;MPI communicator. Defaults to COMM_WORLD.
+
+Returns<br>
+-------<br>
+Callable<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Decorator function.
+
+Notes<br>
+-----<br>
+Function runs on all processes, results are exchanged between all ranks using comm.alltoall().<br>
+Each process receives a list of results from all other processes.
 
 ## `reduce_to_main`
 
