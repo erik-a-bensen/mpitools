@@ -24,7 +24,7 @@ pip install mpi4pytools
 ```
 
 **Requirements:**
-- Python 3.7+
+- Python 3.8+
 - mpi4py
 - An MPI implementation (OpenMPI, MPICH, etc.)
 
@@ -41,12 +41,13 @@ comm, rank, size = setup_mpi()
 # Execute only on rank 0, broadcast result to all processes
 @broadcast_from_main()
 def load_config():
-    return {"num_iterations": 1000, "tolerance": 1e-6}
+    return {"num_pointss": 100}
 
 # Execute on all processes, gather results to rank 0
 @gather_to_main()
-def compute_partial_sum():
-    return sum(range(rank * 100, (rank + 1) * 100))
+def compute_partial_sum(config):
+    n = config['num_points']
+    return sum(range(rank * n, (rank + 1) * n))
 
 # Execute only on rank 0
 @eval_on_main()
@@ -56,7 +57,7 @@ def save_results(data):
 
 # Usage
 config = load_config()  # Same config on all processes
-partial_sums = compute_partial_sum()  # List of sums on rank 0, None elsewhere
+partial_sums = compute_partial_sum(config)  # List of sums on rank 0, None elsewhere
 save_results(partial_sums)  # Only saves on rank 0
 ```
 
@@ -135,8 +136,9 @@ Supported reduction operations: `'sum'`, `'prod'`, `'max'`, `'min'`, `'land'`, `
 
 ### Decorator Variants
 - `@buffered_*` - Buffered versions of collective communication and reduction operations for improved performance. 
-- `@variable_*` - Variable-sized versions of buffered scatter, gather and all_to_all communications for handling dynamic data sizes.
-- Currently, only numpy arrays are supported.
+- `@variable_*` - Variable-sized versions of scatter, gather and all_to_all communications for handling dynamic data sizes.
+- Variable-sized operations are only available for buffered communications.
+- Currently, only numpy arrays are supported for buffered communications.
 
 ## Running MPI Programs
 
