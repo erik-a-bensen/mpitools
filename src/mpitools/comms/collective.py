@@ -1,6 +1,6 @@
 from mpi4py.MPI import Comm, COMM_WORLD
 from collections.abc import Callable
-from functools import wraps
+from functools import wraps 
   
 # Broadcast decorators
 def broadcast_from_main(comm: Comm = COMM_WORLD) -> Callable:
