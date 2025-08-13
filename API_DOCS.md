@@ -131,7 +131,7 @@ Function runs only on ranks in process_ranks, returns None on all other ranks.
 
 ---
 
-# Queue Submodule
+# Queue Module
 
 ## `Task` (class)
 
