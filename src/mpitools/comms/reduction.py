@@ -21,11 +21,19 @@ def reduce_to_main(op: str | Op = 'sum', comm: Comm = COMM_WORLD) -> Callable:
     -------
     Callable
         Decorator function.
+
+    Decorated Function Requirements
+    -------------------------------
+    The decorated function should return data compatible with the specified reduction operation.
     
+    Decorated Function Returns
+    --------------------------
+    On rank 0: The reduced result from all processes.
+    On other ranks: None.
+
     Notes
     -----
-    Function runs on all processes, results are reduced to rank 0 using comm.reduce().
-    Rank 0 receives the reduced result, other ranks receive None.
+    Decorated function runs on all processes.
     """
     if isinstance(op, str):
         if op not in reduce_ops:
@@ -59,11 +67,19 @@ def reduce_to_process(process_rank: int, op: str | Op = 'sum', comm: Comm = COMM
     -------
     Callable
         Decorator function.
+
+    Decorated Function Requirements
+    -------------------------------
+    The decorated function should return data compatible with the specified reduction operation.
     
+    Decorated Function Returns
+    --------------------------
+    On specified rank: The reduced result from all processes.
+    On other ranks: None.
+
     Notes
     -----
-    Function runs on all processes, results are reduced to specified rank using comm.reduce().
-    The specified rank receives the reduced result, other ranks receive None.
+    Decorated function runs on all processes.
     """
     if isinstance(op, str):
         if op not in reduce_ops:
@@ -95,11 +111,18 @@ def reduce_to_all(op: str | Op = 'sum', comm: Comm = COMM_WORLD) -> Callable:
     -------
     Callable
         Decorator function.
+
+    Decorated Function Requirements
+    -------------------------------
+    The decorated function should return data compatible with the specified reduction operation.
     
+    Decorated Function Returns
+    --------------------------
+    The reduced result from all processes, available on all processes.
+
     Notes
     -----
-    Function runs on all processes, results are reduced to all ranks using comm.allreduce().
-    All processes receive the same reduced result.
+    Decorated function runs on all processes.
     """
     if isinstance(op, str):
         if op not in reduce_ops:

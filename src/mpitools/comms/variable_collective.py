@@ -24,11 +24,18 @@ def variable_scatter_from_main(counts: Sequence[int], dtype: np.dtype, comm: Com
     -------
     Callable
         Decorator function.
+
+    Decorated Function Requirements
+    -------------------------------
+    The decorated function should return a 1D numpy array with size sum(counts) and the specified dtype.
     
+    Decorated Function Returns
+    --------------------------
+    Buffer containing the variable-sized chunk assigned to each process based on counts array.
+
     Notes
     -----
-    Function runs only on rank 0, results are scattered to all ranks using comm.Scatterv().
-    Each process receives a portion of the result based on counts array.
+    Decorated function only runs on the main process.
     """
     rank = comm.Get_rank()
     size = comm.Get_size()
@@ -81,11 +88,18 @@ def variable_scatter_from_process(process_rank: int, counts: Sequence[int], dtyp
     -------
     Callable
         Decorator function.
+
+    Decorated Function Requirements
+    -------------------------------
+    The decorated function should return a 1D numpy array with size sum(counts) and the specified dtype.
     
+    Decorated Function Returns
+    --------------------------
+    Buffer containing the variable-sized chunk assigned to each process based on counts array.
+
     Notes
     -----
-    Function runs only on the specified rank, results are scattered to all ranks.
-    Each process receives a portion of the result based on counts array.
+    Decorated function only runs on the specified process.
     """
     rank = comm.Get_rank()
     size = comm.Get_size()
@@ -137,11 +151,19 @@ def variable_gather_to_main(counts: Sequence[int], dtype: np.dtype, comm: Comm =
     -------
     Callable
         Decorator function.
+
+    Decorated Function Requirements
+    -------------------------------
+    The decorated function should return a 1D numpy array with size counts[rank] and the specified dtype.
     
+    Decorated Function Returns
+    --------------------------
+    On rank 0: Buffer containing concatenated variable-sized data from all processes.
+    On other ranks: None.
+
     Notes
     -----
-    Function runs on all processes, results are gathered to rank 0 using comm.Gatherv().
-    Rank 0 receives concatenated results, other ranks receive None.
+    Decorated function runs on all processes.
     """
     rank = comm.Get_rank()
     size = comm.Get_size()
@@ -195,11 +217,19 @@ def variable_gather_to_process(process_rank: int, counts: Sequence[int], dtype: 
     -------
     Callable
         Decorator function.
+
+    Decorated Function Requirements
+    -------------------------------
+    The decorated function should return a 1D numpy array with size counts[rank] and the specified dtype.
     
+    Decorated Function Returns
+    --------------------------
+    On specified rank: Buffer containing concatenated variable-sized data from all processes.
+    On other ranks: None.
+
     Notes
     -----
-    Function runs on all processes, results are gathered to specified rank.
-    The specified rank receives concatenated results, other ranks receive None.
+    Decorated function runs on all processes.
     """
     rank = comm.Get_rank()
     size = comm.Get_size()
@@ -251,11 +281,18 @@ def variable_gather_to_all(counts: Sequence[int], dtype: np.dtype, comm: Comm = 
     -------
     Callable
         Decorator function.
+
+    Decorated Function Requirements
+    -------------------------------
+    The decorated function should return a 1D numpy array with size counts[rank] and the specified dtype.
     
+    Decorated Function Returns
+    --------------------------
+    Buffer containing concatenated variable-sized data from all processes, available on all processes.
+
     Notes
     -----
-    Function runs on all processes, results are gathered to all ranks using comm.Allgatherv().
-    All processes receive concatenated results.
+    Decorated function runs on all processes.
     """
     size = comm.Get_size()
     
@@ -304,11 +341,18 @@ def variable_all_to_all(send_counts: Sequence[int], recv_counts: Sequence[int], 
     -------
     Callable
         Decorator function.
+
+    Decorated Function Requirements
+    -------------------------------
+    The decorated function should return a 1D numpy array with size sum(send_counts) and the specified dtype.
     
+    Decorated Function Returns
+    --------------------------
+    Buffer containing variable-sized data received from all processes based on recv_counts array.
+
     Notes
     -----
-    Function runs on all processes, results are exchanged between all ranks using comm.Alltoallv().
-    Each process receives variable-sized data from all other processes.
+    Decorated function runs on all processes.
     """
     size = comm.Get_size()
     

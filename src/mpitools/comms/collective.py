@@ -16,11 +16,18 @@ def broadcast_from_main(comm: Comm = COMM_WORLD) -> Callable:
     -------
     Callable
         Decorator function.
+
+    Decorated Function Requirements
+    -------------------------------
+    The decorated function can return any pickle-able Python object.
     
+    Decorated Function Returns
+    --------------------------
+    The broadcast result from rank 0, available on all processes.
+
     Notes
     -----
-    Function runs only on rank 0, result is broadcast to all ranks using comm.bcast().
-    All processes receive the same return value.
+    Decorated function only runs on the main process.
     """
     rank = comm.Get_rank()
     def decorator(func: Callable) -> Callable:
@@ -48,11 +55,18 @@ def broadcast_from_process(process_rank: int, comm: Comm = COMM_WORLD) -> Callab
     -------
     Callable
         Decorator function.
+
+    Decorated Function Requirements
+    -------------------------------
+    The decorated function can return any pickle-able Python object.
     
+    Decorated Function Returns
+    --------------------------
+    The broadcast result from the specified rank, available on all processes.
+
     Notes
     -----
-    Function runs only on the specified rank, result is broadcast to all ranks.
-    All processes receive the same return value.
+    Decorated function only runs on the specified process.
     """
     rank = comm.Get_rank()
     def decorator(func: Callable) -> Callable:
@@ -79,11 +93,18 @@ def scatter_from_main(comm: Comm = COMM_WORLD) -> Callable:
     -------
     Callable
         Decorator function.
+
+    Decorated Function Requirements
+    -------------------------------
+    The decorated function should return a sequence (list, tuple, etc.) with length equal to the number of processes.
     
+    Decorated Function Returns
+    --------------------------
+    One element from the sequence, assigned to each process based on its rank.
+
     Notes
     -----
-    Function runs only on rank 0, results are scattered to all ranks using comm.scatter().
-    Each process receives a portion of the result.
+    Decorated function only runs on the main process.
     """
     rank = comm.Get_rank()
     def decorator(func: Callable) -> Callable:
@@ -111,11 +132,18 @@ def scatter_from_process(process_rank: int, comm: Comm = COMM_WORLD) -> Callable
     -------
     Callable
         Decorator function.
+
+    Decorated Function Requirements
+    -------------------------------
+    The decorated function should return a sequence (list, tuple, etc.) with length equal to the number of processes.
     
+    Decorated Function Returns
+    --------------------------
+    One element from the sequence, assigned to each process based on its rank.
+
     Notes
     -----
-    Function runs only on the specified rank, results are scattered to all ranks.
-    Each process receives a portion of the result.
+    Decorated function only runs on the specified process.
     """
     rank = comm.Get_rank()
     def decorator(func: Callable) -> Callable:
@@ -142,11 +170,19 @@ def gather_to_main(comm: Comm = COMM_WORLD) -> Callable:
     -------
     Callable
         Decorator function.
+
+    Decorated Function Requirements
+    -------------------------------
+    The decorated function can return any pickle-able Python object.
     
+    Decorated Function Returns
+    --------------------------
+    On rank 0: List containing results from all processes.
+    On other ranks: None.
+
     Notes
     -----
-    Function runs on all processes, results are gathered to rank 0 using comm.gather().
-    Rank 0 receives a list of all results, other ranks receive None.
+    Decorated function runs on all processes.
     """
     def decorator(func: Callable) -> Callable:
         @wraps(func)
@@ -171,11 +207,19 @@ def gather_to_process(process_rank: int, comm: Comm = COMM_WORLD) -> Callable:
     -------
     Callable
         Decorator function.
+
+    Decorated Function Requirements
+    -------------------------------
+    The decorated function can return any pickle-able Python object.
     
+    Decorated Function Returns
+    --------------------------
+    On specified rank: List containing results from all processes.
+    On other ranks: None.
+
     Notes
     -----
-    Function runs on all processes, results are gathered to specified rank.
-    The specified rank receives a list of all results, other ranks receive None.
+    Decorated function runs on all processes.
     """
     def decorator(func: Callable) -> Callable:
         @wraps(func)
@@ -198,11 +242,18 @@ def gather_to_all(comm: Comm = COMM_WORLD) -> Callable:
     -------
     Callable
         Decorator function.
+
+    Decorated Function Requirements
+    -------------------------------
+    The decorated function can return any pickle-able Python object.
     
+    Decorated Function Returns
+    --------------------------
+    List containing results from all processes, available on all processes.
+
     Notes
     -----
-    Function runs on all processes, results are gathered to all ranks using comm.allgather().
-    All processes receive a list of all results.
+    Decorated function runs on all processes.
     """
     def decorator(func: Callable) -> Callable:
         @wraps(func)
@@ -226,11 +277,18 @@ def all_to_all(comm: Comm = COMM_WORLD) -> Callable:
     -------
     Callable
         Decorator function.
+
+    Decorated Function Requirements
+    -------------------------------
+    The decorated function should return a sequence (list, tuple, etc.) with length equal to the number of processes.
     
+    Decorated Function Returns
+    --------------------------
+    List containing one element from each process, with element order corresponding to process rank.
+
     Notes
     -----
-    Function runs on all processes, results are exchanged between all ranks using comm.alltoall().
-    Each process receives a list of results from all other processes.
+    Decorated function runs on all processes.
     """
     def decorator(func: Callable) -> Callable:
         @wraps(func)

@@ -24,11 +24,18 @@ def buffered_broadcast_from_main(shape: int | Tuple[int, ...], dtype: np.dtype, 
     -------
     Callable
         Decorator function.
+
+    Decorated Function Requirements
+    -------------------------------
+    The decorated function should return a numpy array with the specified shape and dtype.
     
+    Decorated Function Returns
+    --------------------------
+    Buffer containing the broadcast data on all processes.
+
     Notes
     -----
-    Function runs only on rank 0, result is broadcast to all ranks using comm.Bcast().
-    All processes receive the same return value.
+    Decorated function only runs on the main process.
     """
     rank = comm.Get_rank()
     if isinstance(shape, int):
@@ -75,11 +82,18 @@ def buffered_broadcast_from_process(process_rank: int, shape: int | Tuple[int, .
     -------
     Callable
         Decorator function.
+
+    Decorated Function Requirements
+    -------------------------------
+    The decorated function should return a numpy array with the specified shape and dtype.
     
+    Decorated Function Returns
+    --------------------------
+    Buffer containing the broadcast data on all processes.
+
     Notes
     -----
-    Function runs only on the specified rank, result is broadcast to all ranks.
-    All processes receive the same return value.
+    Decorated function only runs on the specified process.
     """
     rank = comm.Get_rank()
     if isinstance(shape, int):
@@ -119,11 +133,18 @@ def buffered_scatter_from_main(chunk_shape: int | Tuple[int, ...], dtype: np.dty
     -------
     Callable
         Decorator function.
+
+    Decorated Function Requirements
+    -------------------------------
+    The decorated function should return a numpy array with shape (num_processes, *chunk_shape) and the specified dtype.
     
+    Decorated Function Returns
+    --------------------------
+    Buffer containing the scattered chunk assigned to each process.
+
     Notes
     -----
-    Function runs only on rank 0, results are scattered to all ranks using comm.scatter().
-    Each process receives a portion of the result.
+    Decorated function only runs on the main process.
     """
     rank = comm.Get_rank()
     
@@ -171,11 +192,18 @@ def buffered_scatter_from_process(process_rank: int, chunk_shape: int | Tuple[in
     -------
     Callable
         Decorator function.
+
+    Decorated Function Requirements
+    -------------------------------
+    The decorated function should return a numpy array with shape (num_processes, *chunk_shape) and the specified dtype.
     
+    Decorated Function Returns
+    --------------------------
+    Buffer containing the scattered chunk assigned to each process.
+
     Notes
     -----
-    Function runs only on the specified rank, results are scattered to all ranks.
-    Each process receives a portion of the result.
+    Decorated function only runs on the specified process.
     """
     rank = comm.Get_rank()
     
@@ -224,11 +252,19 @@ def buffered_gather_to_process(process_rank: int, shape: int | Tuple[int, ...], 
     -------
     Callable
         Decorator function.
+
+    Decorated Function Requirements
+    -------------------------------
+    The decorated function should return a numpy array with the specified shape and dtype.
     
+    Decorated Function Returns
+    --------------------------
+    On specified rank: Buffer with shape (num_processes, *shape) containing all gathered data.
+    On other ranks: None.
+
     Notes
     -----
-    Function runs on all processes, results are gathered to specified rank.
-    The specified rank receives a list of all results, other ranks receive None.
+    Decorated function runs on all processes.
     """
     rank = comm.Get_rank()
     size = comm.Get_size()
@@ -276,11 +312,18 @@ def buffered_gather_to_all(shape: int | Tuple[int, ...], dtype: np.dtype, comm: 
     -------
     Callable
         Decorator function.
+
+    Decorated Function Requirements
+    -------------------------------
+    The decorated function should return a numpy array with the specified shape and dtype.
     
+    Decorated Function Returns
+    --------------------------
+    Buffer with shape (num_processes, *shape) containing all gathered data on all processes.
+
     Notes
     -----
-    Function runs on all processes, results are gathered to all ranks using comm.allgather().
-    All processes receive a list of all results.
+    Decorated function runs on all processes.
     """
     size = comm.Get_size()
     
@@ -323,11 +366,19 @@ def buffered_gather_to_main(shape: int | Tuple[int, ...], dtype: np.dtype, comm:
     -------
     Callable
         Decorator function.
+
+    Decorated Function Requirements
+    -------------------------------
+    The decorated function should return a numpy array with the specified shape and dtype.
     
+    Decorated Function Returns
+    --------------------------
+    On rank 0: Buffer with shape (num_processes, *shape) containing all gathered data.
+    On other ranks: None.
+
     Notes
     -----
-    Function runs on all processes, results are gathered to rank 0 using comm.gather().
-    Rank 0 receives a list of all results, other ranks receive None.
+    Decorated function runs on all processes.
     """
     rank = comm.Get_rank()
     size = comm.Get_size()
@@ -376,11 +427,18 @@ def buffered_all_to_all(element_shape: int | Tuple[int, ...], dtype: np.dtype, c
     -------
     Callable
         Decorator function.
+
+    Decorated Function Requirements
+    -------------------------------
+    The decorated function should return a numpy array with shape (num_processes, *element_shape) and the specified dtype.
     
+    Decorated Function Returns
+    --------------------------
+    Buffer with shape (num_processes, *element_shape) containing exchanged data from all processes.
+
     Notes
     -----
-    Function runs on all processes, results are exchanged between all ranks using comm.alltoall().
-    Each process receives a list of results from all other processes.
+    Decorated function runs on all processes.
     """
     size = comm.Get_size()
     
@@ -396,7 +454,7 @@ def buffered_all_to_all(element_shape: int | Tuple[int, ...], dtype: np.dtype, c
             result = func(*args, **kwargs)
             
             send_buff = result
-            recv_buff = recv_buff = build_buffer((size,) + element_shape, dtype)
+            recv_buff = build_buffer((size,) + element_shape, dtype)
             
             # All-to-all exchange
             comm.Alltoall([send_buff, mpi_dtype], [recv_buff, mpi_dtype])

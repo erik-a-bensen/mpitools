@@ -28,11 +28,19 @@ def buffered_reduce_to_main(shape: int | Tuple[int, ...], dtype: np.dtype, op: s
     -------
     Callable
         Decorator function.
+
+    Decorated Function Requirements
+    -------------------------------
+    The decorated function should return a numpy array with the specified shape and dtype.
     
+    Decorated Function Returns
+    --------------------------
+    On rank 0: Buffer containing the reduced result from all processes.
+    On other ranks: None.
+
     Notes
     -----
-    Function runs on all processes, results are reduced to rank 0 using comm.Reduce().
-    Rank 0 receives the reduced result, other ranks receive None.
+    Decorated function runs on all processes.
     """
     rank = comm.Get_rank()
     
@@ -87,11 +95,19 @@ def buffered_reduce_to_process(process_rank: int, shape: int | Tuple[int, ...], 
     -------
     Callable
         Decorator function.
+
+    Decorated Function Requirements
+    -------------------------------
+    The decorated function should return a numpy array with the specified shape and dtype.
     
+    Decorated Function Returns
+    --------------------------
+    On specified rank: Buffer containing the reduced result from all processes.
+    On other ranks: None.
+
     Notes
     -----
-    Function runs on all processes, results are reduced to specified rank using comm.Reduce().
-    The specified rank receives the reduced result, other ranks receive None.
+    Decorated function runs on all processes.
     """
     rank = comm.Get_rank()
     
@@ -144,11 +160,18 @@ def buffered_reduce_to_all(shape: int | Tuple[int, ...], dtype: np.dtype, op: st
     -------
     Callable
         Decorator function.
+
+    Decorated Function Requirements
+    -------------------------------
+    The decorated function should return a numpy array with the specified shape and dtype.
     
+    Decorated Function Returns
+    --------------------------
+    Buffer containing the reduced result from all processes, available on all processes.
+
     Notes
     -----
-    Function runs on all processes, results are reduced to all ranks using comm.Allreduce().
-    All processes receive the same reduced result.
+    Decorated function runs on all processes.
     """
     if isinstance(shape, int):
         shape = (shape,)
