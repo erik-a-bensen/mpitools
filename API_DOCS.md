@@ -151,10 +151,17 @@ Returns<br>
 Callable<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Decorator function.
 
+Decorated Function Requirements<br>
+-------------------------------<br>
+The decorated function can return any pickle-able Python object.
+
+Decorated Function Returns<br>
+--------------------------<br>
+The broadcast result from rank 0, available on all processes.
+
 Notes<br>
 -----<br>
-Function runs only on rank 0, result is broadcast to all ranks using comm.bcast().<br>
-All processes receive the same return value.
+Decorated function only runs on the main process.
 
 ## `broadcast_from_process`
 
@@ -176,10 +183,17 @@ Returns<br>
 Callable<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Decorator function.
 
+Decorated Function Requirements<br>
+-------------------------------<br>
+The decorated function can return any pickle-able Python object.
+
+Decorated Function Returns<br>
+--------------------------<br>
+The broadcast result from the specified rank, available on all processes.
+
 Notes<br>
 -----<br>
-Function runs only on the specified rank, result is broadcast to all ranks.<br>
-All processes receive the same return value.
+Decorated function only runs on the specified process.
 
 ## `scatter_from_main`
 
@@ -199,10 +213,17 @@ Returns<br>
 Callable<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Decorator function.
 
+Decorated Function Requirements<br>
+-------------------------------<br>
+The decorated function should return a sequence (list, tuple, etc.) with length equal to the number of processes.
+
+Decorated Function Returns<br>
+--------------------------<br>
+One element from the sequence, assigned to each process based on its rank.
+
 Notes<br>
 -----<br>
-Function runs only on rank 0, results are scattered to all ranks using comm.scatter().<br>
-Each process receives a portion of the result.
+Decorated function only runs on the main process.
 
 ## `scatter_from_process`
 
@@ -224,10 +245,17 @@ Returns<br>
 Callable<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Decorator function.
 
+Decorated Function Requirements<br>
+-------------------------------<br>
+The decorated function should return a sequence (list, tuple, etc.) with length equal to the number of processes.
+
+Decorated Function Returns<br>
+--------------------------<br>
+One element from the sequence, assigned to each process based on its rank.
+
 Notes<br>
 -----<br>
-Function runs only on the specified rank, results are scattered to all ranks.<br>
-Each process receives a portion of the result.
+Decorated function only runs on the specified process.
 
 ## `gather_to_main`
 
@@ -247,10 +275,18 @@ Returns<br>
 Callable<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Decorator function.
 
+Decorated Function Requirements<br>
+-------------------------------<br>
+The decorated function can return any pickle-able Python object.
+
+Decorated Function Returns<br>
+--------------------------<br>
+On rank 0: List containing results from all processes.<br>
+On other ranks: None.
+
 Notes<br>
 -----<br>
-Function runs on all processes, results are gathered to rank 0 using comm.gather().<br>
-Rank 0 receives a list of all results, other ranks receive None.
+Decorated function runs on all processes.
 
 ## `gather_to_process`
 
@@ -272,10 +308,18 @@ Returns<br>
 Callable<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Decorator function.
 
+Decorated Function Requirements<br>
+-------------------------------<br>
+The decorated function can return any pickle-able Python object.
+
+Decorated Function Returns<br>
+--------------------------<br>
+On specified rank: List containing results from all processes.<br>
+On other ranks: None.
+
 Notes<br>
 -----<br>
-Function runs on all processes, results are gathered to specified rank.<br>
-The specified rank receives a list of all results, other ranks receive None.
+Decorated function runs on all processes.
 
 ## `gather_to_all`
 
@@ -295,10 +339,17 @@ Returns<br>
 Callable<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Decorator function.
 
+Decorated Function Requirements<br>
+-------------------------------<br>
+The decorated function can return any pickle-able Python object.
+
+Decorated Function Returns<br>
+--------------------------<br>
+List containing results from all processes, available on all processes.
+
 Notes<br>
 -----<br>
-Function runs on all processes, results are gathered to all ranks using comm.allgather().<br>
-All processes receive a list of all results.
+Decorated function runs on all processes.
 
 ## `all_to_all`
 
@@ -318,10 +369,17 @@ Returns <br>
 Callable<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Decorator function.
 
+Decorated Function Requirements<br>
+-------------------------------<br>
+The decorated function should return a sequence (list, tuple, etc.) with length equal to the number of processes.
+
+Decorated Function Returns<br>
+--------------------------<br>
+List containing one element from each process, with element order corresponding to process rank.
+
 Notes<br>
 -----<br>
-Function runs on all processes, results are exchanged between all ranks using comm.alltoall().<br>
-Each process receives a list of results from all other processes.
+Decorated function runs on all processes.
 
 ## `reduce_to_main`
 
@@ -345,10 +403,18 @@ Returns<br>
 Callable<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Decorator function.
 
+Decorated Function Requirements<br>
+-------------------------------<br>
+The decorated function should return data compatible with the specified reduction operation.
+
+Decorated Function Returns<br>
+--------------------------<br>
+On rank 0: The reduced result from all processes.<br>
+On other ranks: None.
+
 Notes<br>
 -----<br>
-Function runs on all processes, results are reduced to rank 0 using comm.reduce().<br>
-Rank 0 receives the reduced result, other ranks receive None.
+Decorated function runs on all processes.
 
 ## `reduce_to_process`
 
@@ -374,10 +440,18 @@ Returns<br>
 Callable<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Decorator function.
 
+Decorated Function Requirements<br>
+-------------------------------<br>
+The decorated function should return data compatible with the specified reduction operation.
+
+Decorated Function Returns<br>
+--------------------------<br>
+On specified rank: The reduced result from all processes.<br>
+On other ranks: None.
+
 Notes<br>
 -----<br>
-Function runs on all processes, results are reduced to specified rank using comm.reduce().<br>
-The specified rank receives the reduced result, other ranks receive None.
+Decorated function runs on all processes.
 
 ## `reduce_to_all`
 
@@ -401,10 +475,17 @@ Returns<br>
 Callable<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Decorator function.
 
+Decorated Function Requirements<br>
+-------------------------------<br>
+The decorated function should return data compatible with the specified reduction operation.
+
+Decorated Function Returns<br>
+--------------------------<br>
+The reduced result from all processes, available on all processes.
+
 Notes<br>
 -----<br>
-Function runs on all processes, results are reduced to all ranks using comm.allreduce().<br>
-All processes receive the same reduced result.
+Decorated function runs on all processes.
 
 ## `buffered_broadcast_from_main`
 
@@ -428,10 +509,17 @@ Returns<br>
 Callable<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Decorator function.
 
+Decorated Function Requirements<br>
+-------------------------------<br>
+The decorated function should return a numpy array with the specified shape and dtype.
+
+Decorated Function Returns<br>
+--------------------------<br>
+Buffer containing the broadcast data on all processes.
+
 Notes<br>
 -----<br>
-Function runs only on rank 0, result is broadcast to all ranks using comm.Bcast().<br>
-All processes receive the same return value.
+Decorated function only runs on the main process.
 
 ## `buffered_broadcast_from_process`
 
@@ -457,10 +545,17 @@ Returns<br>
 Callable<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Decorator function.
 
+Decorated Function Requirements<br>
+-------------------------------<br>
+The decorated function should return a numpy array with the specified shape and dtype.
+
+Decorated Function Returns<br>
+--------------------------<br>
+Buffer containing the broadcast data on all processes.
+
 Notes<br>
 -----<br>
-Function runs only on the specified rank, result is broadcast to all ranks.<br>
-All processes receive the same return value.
+Decorated function only runs on the specified process.
 
 ## `buffered_scatter_from_main`
 
@@ -484,10 +579,17 @@ Returns<br>
 Callable<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Decorator function.
 
+Decorated Function Requirements<br>
+-------------------------------<br>
+The decorated function should return a numpy array with shape (num_processes, *chunk_shape) and the specified dtype.
+
+Decorated Function Returns<br>
+--------------------------<br>
+Buffer containing the scattered chunk assigned to each process.
+
 Notes<br>
 -----<br>
-Function runs only on rank 0, results are scattered to all ranks using comm.scatter().<br>
-Each process receives a portion of the result.
+Decorated function only runs on the main process.
 
 ## `buffered_scatter_from_process`
 
@@ -513,10 +615,17 @@ Returns<br>
 Callable<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Decorator function.
 
+Decorated Function Requirements<br>
+-------------------------------<br>
+The decorated function should return a numpy array with shape (num_processes, *chunk_shape) and the specified dtype.
+
+Decorated Function Returns<br>
+--------------------------<br>
+Buffer containing the scattered chunk assigned to each process.
+
 Notes<br>
 -----<br>
-Function runs only on the specified rank, results are scattered to all ranks.<br>
-Each process receives a portion of the result.
+Decorated function only runs on the specified process.
 
 ## `buffered_gather_to_main`
 
@@ -540,10 +649,18 @@ Returns<br>
 Callable<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Decorator function.
 
+Decorated Function Requirements<br>
+-------------------------------<br>
+The decorated function should return a numpy array with the specified shape and dtype.
+
+Decorated Function Returns<br>
+--------------------------<br>
+On rank 0: Buffer with shape (num_processes, *shape) containing all gathered data.<br>
+On other ranks: None.
+
 Notes<br>
 -----<br>
-Function runs on all processes, results are gathered to rank 0 using comm.gather().<br>
-Rank 0 receives a list of all results, other ranks receive None.
+Decorated function runs on all processes.
 
 ## `buffered_gather_to_process`
 
@@ -569,10 +686,18 @@ Returns<br>
 Callable<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Decorator function.
 
+Decorated Function Requirements<br>
+-------------------------------<br>
+The decorated function should return a numpy array with the specified shape and dtype.
+
+Decorated Function Returns<br>
+--------------------------<br>
+On specified rank: Buffer with shape (num_processes, *shape) containing all gathered data.<br>
+On other ranks: None.
+
 Notes<br>
 -----<br>
-Function runs on all processes, results are gathered to specified rank.<br>
-The specified rank receives a list of all results, other ranks receive None.
+Decorated function runs on all processes.
 
 ## `buffered_gather_to_all`
 
@@ -596,10 +721,17 @@ Returns<br>
 Callable<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Decorator function.
 
+Decorated Function Requirements<br>
+-------------------------------<br>
+The decorated function should return a numpy array with the specified shape and dtype.
+
+Decorated Function Returns<br>
+--------------------------<br>
+Buffer with shape (num_processes, *shape) containing all gathered data on all processes.
+
 Notes<br>
 -----<br>
-Function runs on all processes, results are gathered to all ranks using comm.allgather().<br>
-All processes receive a list of all results.
+Decorated function runs on all processes.
 
 ## `buffered_all_to_all`
 
@@ -623,10 +755,17 @@ Returns<br>
 Callable<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Decorator function.
 
+Decorated Function Requirements<br>
+-------------------------------<br>
+The decorated function should return a numpy array with shape (num_processes, *element_shape) and the specified dtype.
+
+Decorated Function Returns<br>
+--------------------------<br>
+Buffer with shape (num_processes, *element_shape) containing exchanged data from all processes.
+
 Notes<br>
 -----<br>
-Function runs on all processes, results are exchanged between all ranks using comm.alltoall().<br>
-Each process receives a list of results from all other processes.
+Decorated function runs on all processes.
 
 ## `buffered_reduce_to_main`
 
@@ -654,10 +793,18 @@ Returns<br>
 Callable<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Decorator function.
 
+Decorated Function Requirements<br>
+-------------------------------<br>
+The decorated function should return a numpy array with the specified shape and dtype.
+
+Decorated Function Returns<br>
+--------------------------<br>
+On rank 0: Buffer containing the reduced result from all processes.<br>
+On other ranks: None.
+
 Notes<br>
 -----<br>
-Function runs on all processes, results are reduced to rank 0 using comm.Reduce().<br>
-Rank 0 receives the reduced result, other ranks receive None.
+Decorated function runs on all processes.
 
 ## `buffered_reduce_to_process`
 
@@ -687,10 +834,18 @@ Returns<br>
 Callable<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Decorator function.
 
+Decorated Function Requirements<br>
+-------------------------------<br>
+The decorated function should return a numpy array with the specified shape and dtype.
+
+Decorated Function Returns<br>
+--------------------------<br>
+On specified rank: Buffer containing the reduced result from all processes.<br>
+On other ranks: None.
+
 Notes<br>
 -----<br>
-Function runs on all processes, results are reduced to specified rank using comm.Reduce().<br>
-The specified rank receives the reduced result, other ranks receive None.
+Decorated function runs on all processes.
 
 ## `buffered_reduce_to_all`
 
@@ -718,10 +873,17 @@ Returns<br>
 Callable<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Decorator function.
 
+Decorated Function Requirements<br>
+-------------------------------<br>
+The decorated function should return a numpy array with the specified shape and dtype.
+
+Decorated Function Returns<br>
+--------------------------<br>
+Buffer containing the reduced result from all processes, available on all processes.
+
 Notes<br>
 -----<br>
-Function runs on all processes, results are reduced to all ranks using comm.Allreduce().<br>
-All processes receive the same reduced result.
+Decorated function runs on all processes.
 
 ## `variable_scatter_from_main`
 
@@ -745,10 +907,17 @@ Returns<br>
 Callable<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Decorator function.
 
+Decorated Function Requirements<br>
+-------------------------------<br>
+The decorated function should return a 1D numpy array with size sum(counts) and the specified dtype.
+
+Decorated Function Returns<br>
+--------------------------<br>
+Buffer containing the variable-sized chunk assigned to each process based on counts array.
+
 Notes<br>
 -----<br>
-Function runs only on rank 0, results are scattered to all ranks using comm.Scatterv().<br>
-Each process receives a portion of the result based on counts array.
+Decorated function only runs on the main process.
 
 ## `variable_scatter_from_process`
 
@@ -774,10 +943,17 @@ Returns<br>
 Callable<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Decorator function.
 
+Decorated Function Requirements<br>
+-------------------------------<br>
+The decorated function should return a 1D numpy array with size sum(counts) and the specified dtype.
+
+Decorated Function Returns<br>
+--------------------------<br>
+Buffer containing the variable-sized chunk assigned to each process based on counts array.
+
 Notes<br>
 -----<br>
-Function runs only on the specified rank, results are scattered to all ranks.<br>
-Each process receives a portion of the result based on counts array.
+Decorated function only runs on the specified process.
 
 ## `variable_gather_to_main`
 
@@ -801,10 +977,18 @@ Returns<br>
 Callable<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Decorator function.
 
+Decorated Function Requirements<br>
+-------------------------------<br>
+The decorated function should return a 1D numpy array with size counts[rank] and the specified dtype.
+
+Decorated Function Returns<br>
+--------------------------<br>
+On rank 0: Buffer containing concatenated variable-sized data from all processes.<br>
+On other ranks: None.
+
 Notes<br>
 -----<br>
-Function runs on all processes, results are gathered to rank 0 using comm.Gatherv().<br>
-Rank 0 receives concatenated results, other ranks receive None.
+Decorated function runs on all processes.
 
 ## `variable_gather_to_process`
 
@@ -830,10 +1014,18 @@ Returns<br>
 Callable<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Decorator function.
 
+Decorated Function Requirements<br>
+-------------------------------<br>
+The decorated function should return a 1D numpy array with size counts[rank] and the specified dtype.
+
+Decorated Function Returns<br>
+--------------------------<br>
+On specified rank: Buffer containing concatenated variable-sized data from all processes.<br>
+On other ranks: None.
+
 Notes<br>
 -----<br>
-Function runs on all processes, results are gathered to specified rank.<br>
-The specified rank receives concatenated results, other ranks receive None.
+Decorated function runs on all processes.
 
 ## `variable_gather_to_all`
 
@@ -857,10 +1049,17 @@ Returns<br>
 Callable<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Decorator function.
 
+Decorated Function Requirements<br>
+-------------------------------<br>
+The decorated function should return a 1D numpy array with size counts[rank] and the specified dtype.
+
+Decorated Function Returns<br>
+--------------------------<br>
+Buffer containing concatenated variable-sized data from all processes, available on all processes.
+
 Notes<br>
 -----<br>
-Function runs on all processes, results are gathered to all ranks using comm.Allgatherv().<br>
-All processes receive concatenated results.
+Decorated function runs on all processes.
 
 ## `variable_all_to_all`
 
@@ -886,10 +1085,17 @@ Returns<br>
 Callable<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Decorator function.
 
+Decorated Function Requirements<br>
+-------------------------------<br>
+The decorated function should return a 1D numpy array with size sum(send_counts) and the specified dtype.
+
+Decorated Function Returns<br>
+--------------------------<br>
+Buffer containing variable-sized data received from all processes based on recv_counts array.
+
 Notes<br>
 -----<br>
-Function runs on all processes, results are exchanged between all ranks using comm.Alltoallv().<br>
-Each process receives variable-sized data from all other processes.
+Decorated function runs on all processes.
 
 ---
 
