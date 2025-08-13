@@ -1,5 +1,4 @@
-from mpi4py import MPI
-from mpi4py.MPI import Comm, COMM_WORLD, Op
+from mpi4py.MPI import Comm, COMM_WORLD
 from collections.abc import Callable
 from functools import wraps
   
@@ -63,6 +62,69 @@ def broadcast_from_process(process_rank: int, comm: Comm = COMM_WORLD) -> Callab
             if rank == process_rank:
                 result = func(*args, **kwargs)
             return comm.bcast(result, root=process_rank)
+        return wrapper
+    return decorator
+
+# Scatter decorators
+def scatter_from_main(comm: Comm = COMM_WORLD) -> Callable:
+    """
+    Decorator that executes function on rank 0 and scatters results to all processes.
+    
+    Parameters
+    ----------
+    comm : MPI.Comm, optional
+        MPI communicator. Defaults to COMM_WORLD.
+    
+    Returns
+    -------
+    Callable
+        Decorator function.
+    
+    Notes
+    -----
+    Function runs only on rank 0, results are scattered to all ranks using comm.scatter().
+    Each process receives a portion of the result.
+    """
+    rank = comm.Get_rank()
+    def decorator(func: Callable) -> Callable:
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+            result = None
+            if rank == 0:
+                result = func(*args, **kwargs)
+            return comm.scatter(result, root=0)
+        return wrapper
+    return decorator
+
+def scatter_from_process(process_rank: int, comm: Comm = COMM_WORLD) -> Callable:
+    """
+    Decorator that executes function on specified rank and scatters results to all processes.
+    
+    Parameters
+    ----------
+    process_rank : int
+        Rank of the process that should execute the function and scatter results.
+    comm : MPI.Comm, optional
+        MPI communicator. Defaults to COMM_WORLD.
+    
+    Returns
+    -------
+    Callable
+        Decorator function.
+    
+    Notes
+    -----
+    Function runs only on the specified rank, results are scattered to all ranks.
+    Each process receives a portion of the result.
+    """
+    rank = comm.Get_rank()
+    def decorator(func: Callable) -> Callable:
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+            result = None
+            if rank == process_rank:
+                result = func(*args, **kwargs)
+            return comm.scatter(result, root=process_rank)
         return wrapper
     return decorator
 
@@ -150,32 +212,13 @@ def gather_to_all(comm: Comm = COMM_WORLD) -> Callable:
         return wrapper
     return decorator
 
-# Reduce decorators
-_reduce_ops = {
-    'sum': MPI.SUM,
-    'prod': MPI.PROD,
-    'max': MPI.MAX,
-    'min': MPI.MIN,
-    'land': MPI.LAND,
-    'band': MPI.BAND,
-    'lor': MPI.LOR,
-    'bor': MPI.BOR,
-    'lxor': MPI.LXOR,
-    'bxor': MPI.BXOR,
-    'maxloc': MPI.MAXLOC,
-    'minloc': MPI.MINLOC
-}
-
-def reduce_to_main(op: str | Op = 'sum', comm: Comm = COMM_WORLD) -> Callable:
+# All to all decorator 
+def all_to_all(comm: Comm = COMM_WORLD) -> Callable:
     """
-    Decorator that executes function on all processes and reduces results to rank 0.
+    Decorator that executes function on all processes and exchanges results between all processes.
     
     Parameters
     ----------
-    op : str or MPI.Op, optional
-        Reduction operation to apply. Defaults to 'sum'.
-        String options: 'sum', 'prod', 'max', 'min', 'land', 'band', 'lor', 'bor', 
-        'lxor', 'bxor', 'maxloc', 'minloc'.
     comm : MPI.Comm, optional
         MPI communicator. Defaults to COMM_WORLD.
     
@@ -186,92 +229,13 @@ def reduce_to_main(op: str | Op = 'sum', comm: Comm = COMM_WORLD) -> Callable:
     
     Notes
     -----
-    Function runs on all processes, results are reduced to rank 0 using comm.reduce().
-    Rank 0 receives the reduced result, other ranks receive None.
+    Function runs on all processes, results are exchanged between all ranks using comm.alltoall().
+    Each process receives a list of results from all other processes.
     """
-    if isinstance(op, str):
-        if op not in _reduce_ops:
-            raise ValueError(f"Invalid reduction operation: {op}. Supported operations: {list(_reduce_ops.keys())}")
-        op = _reduce_ops[op.lower()]
-
     def decorator(func: Callable) -> Callable:
         @wraps(func)
         def wrapper(*args, **kwargs):
             result = func(*args, **kwargs)
-            return comm.reduce(result, op=op, root=0)
-        return wrapper
-    return decorator
-
-def reduce_to_process(process_rank: int, op: str | Op = 'sum', comm: Comm = COMM_WORLD) -> Callable:
-    """
-    Decorator that executes function on all processes and reduces results to specified rank.
-    
-    Parameters
-    ----------
-    process_rank : int
-        Rank of the process that should receive the reduced result.
-    op : str or MPI.Op, optional
-        Reduction operation to apply. Defaults to 'sum'.
-        String options: 'sum', 'prod', 'max', 'min', 'land', 'band', 'lor', 'bor', 
-        'lxor', 'bxor', 'maxloc', 'minloc'.
-    comm : MPI.Comm, optional
-        MPI communicator. Defaults to COMM_WORLD.
-    
-    Returns
-    -------
-    Callable
-        Decorator function.
-    
-    Notes
-    -----
-    Function runs on all processes, results are reduced to specified rank using comm.reduce().
-    The specified rank receives the reduced result, other ranks receive None.
-    """
-    if isinstance(op, str):
-        if op not in _reduce_ops:
-            raise ValueError(f"Invalid reduction operation: {op}. Supported operations: {list(_reduce_ops.keys())}")
-        op = _reduce_ops[op.lower()]
-
-    def decorator(func: Callable) -> Callable:
-        @wraps(func)
-        def wrapper(*args, **kwargs):
-            result = func(*args, **kwargs)
-            return comm.reduce(result, op=op, root=process_rank)
-        return wrapper
-    return decorator
-
-def reduce_to_all(op: str | Op = 'sum', comm: Comm = COMM_WORLD) -> Callable:
-    """
-    Decorator that executes function on all processes and reduces results to all processes.
-    
-    Parameters
-    ----------
-    op : str or MPI.Op, optional
-        Reduction operation to apply. Defaults to 'sum'.
-        String options: 'sum', 'prod', 'max', 'min', 'land', 'band', 'lor', 'bor', 
-        'lxor', 'bxor', 'maxloc', 'minloc'.
-    comm : MPI.Comm, optional
-        MPI communicator. Defaults to COMM_WORLD.
-    
-    Returns
-    -------
-    Callable
-        Decorator function.
-    
-    Notes
-    -----
-    Function runs on all processes, results are reduced to all ranks using comm.allreduce().
-    All processes receive the same reduced result.
-    """
-    if isinstance(op, str):
-        if op not in _reduce_ops:
-            raise ValueError(f"Invalid reduction operation: {op}. Supported operations: {list(_reduce_ops.keys())}")
-        op = _reduce_ops[op.lower()]
-
-    def decorator(func: Callable) -> Callable:
-        @wraps(func)
-        def wrapper(*args, **kwargs):
-            result = func(*args, **kwargs)
-            return comm.allreduce(result, op=op)
+            return comm.alltoall(result)
         return wrapper
     return decorator
